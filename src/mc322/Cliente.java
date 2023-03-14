@@ -94,6 +94,8 @@ public class Cliente {
 			soma += atual * (10 - i);
 		}			
 		
+		System.out.println(soma);
+		
 		// pegamos o resto da soma / 11
 		int resto = soma % 11;
 		
