@@ -1,4 +1,4 @@
-package mc322;
+package mc322.veiculo;
 
 public class Veiculo {
 	private String placa;

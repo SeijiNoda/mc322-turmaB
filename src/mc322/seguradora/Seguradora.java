@@ -1,4 +1,4 @@
-package mc322;
+package mc322.seguradora;
 
 public class Seguradora {
 	private String nome;

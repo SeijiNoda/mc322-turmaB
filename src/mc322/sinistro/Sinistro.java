@@ -1,4 +1,4 @@
-package mc322;
+package mc322.sinistro;
 
 import java.util.Random;
 

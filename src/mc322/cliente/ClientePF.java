@@ -1,59 +1,27 @@
-package mc322;
+package mc322.cliente;
 
-public class Cliente {
-	private String nome;
-	private String cpf;
-	private String dataNascimento;
-	private int idade;
-	private String endereco;
+import java.util.Date;
+
+public class ClientePF extends Cliente{
+	private final String cpf;
+	private Date dataNascimento;
 	
-	public Cliente(String nome, String cpf, String dataNascimento, int idade, String endereco) {
-		this.nome = nome;
+	public ClientePF(String nome, String endereco, Date dataLicensa, String educacao, String genero, String classeEconomica, String cpf, Date dataNascimento) {
+		super(nome, endereco, dataLicensa, educacao, genero, classeEconomica);
 		this.cpf = cpf;
 		this.dataNascimento = dataNascimento;
-		this.idade = idade;
-		this.endereco = endereco;
-	}
-	
-	
-	public String getNome() {
-		return nome;
-	}
-	
-	public void setNome(String nome) {
-		this.nome = nome;
 	}
 	
 	public String getCpf() {
 		return cpf;
 	}
-	
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
-	
-	public String getDataNascimento() {
+
+	public Date getDataNascimento() {
 		return dataNascimento;
 	}
-	
-	public void setDataNascimento(String dataNascimento) {
+
+	public void setDataNascimento(Date dataNascimento) {
 		this.dataNascimento = dataNascimento;
-	}
-	
-	public int getIdade() {
-		return idade;
-	}
-	
-	public void setIdade(int idade) {
-		this.idade = idade;
-	}
-	
-	public String getEndereco() {
-		return endereco;
-	}
-	
-	public void setEndereco(String endereco) {
-		this.endereco = endereco;
 	}
 	
 	public boolean validarCPF(String cpf) {
@@ -70,6 +38,7 @@ public class Cliente {
 		}
 		
 		// calculamos os digitos verificadores
+
 		int primeiroVerificador = calcularDigitoVerificador(cpf.substring(0, 9));
 		int segundoVerificador = calcularDigitoVerificador(cpf.substring(1, 10));
 		
@@ -80,7 +49,7 @@ public class Cliente {
 		// se passar de todas verificacoes retornamos true
 		return true;
 	}
-	
+
 	private int calcularDigitoVerificador(String numeros) {
 		// verificamos o comprimento da string parametro
 		if (numeros.length() != 9) return -1;
@@ -94,8 +63,6 @@ public class Cliente {
 			soma += atual * (10 - i);
 		}			
 		
-		System.out.println(soma);
-		
 		// pegamos o resto da soma / 11
 		int resto = soma % 11;
 		
@@ -106,9 +73,10 @@ public class Cliente {
 		return 11 - resto;
 	}
 	
+	@Override
 	public String toString() {
-		// usamos String.format() para concatenar a string de retorno
-		return String.format("Nome: %s\nCPF: %s\nNascimento: %s\nIdade %d\nEndereco: %s", 
-							 this.getNome(), this.getCpf(), this.getDataNascimento(), this.getIdade(), this.getEndereco());
+		
+		
+		return String.format("Nome: %s\nCPF: %s\nAniversario: %s", this.getNome(), this.getCpf(), this.getDataNascimento().toString());
 	}
 }
