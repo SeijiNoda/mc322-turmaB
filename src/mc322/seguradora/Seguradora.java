@@ -85,20 +85,18 @@ public class Seguradora {
 		}
 		
 		this.listaClientes.add(novo);
-		return false;
+		return true;
 	}
 	
 	public boolean removerCliente(Cliente remover) {
 		for(Cliente cliente: this.listaClientes) {
-			if (remover instanceof ClientePF && cliente instanceof ClientePF) {
-				
+			if (remover instanceof ClientePF && cliente instanceof ClientePF) {			
 				boolean cpfIgual = ((ClientePF) remover).getCpf().equals(((ClientePF) cliente).getCpf());
 				if (cpfIgual) {
 					this.listaClientes.remove(cliente);
 					return true;
 				}
-			} else if (remover instanceof ClientePJ && cliente instanceof ClientePJ) {
-				
+			} else if (remover instanceof ClientePJ && cliente instanceof ClientePJ) {		
 				boolean cnpjIgual = ((ClientePJ) remover).getCnpj().equals(((ClientePJ) cliente).getCnpj());
 				if (cnpjIgual) {
 					this.listaClientes.remove(cliente);
@@ -107,5 +105,36 @@ public class Seguradora {
 			}
 		}
 		return false;
+	}
+	
+	public List<Cliente> listarClientes(String tipoCliente) {
+		tipoCliente = tipoCliente.toUpperCase();
+		List<Cliente> ret = new ArrayList<Cliente>();
+		if (tipoCliente.equals("PF")) {
+			for (Cliente cliente: this.listaClientes) {
+				if (cliente instanceof ClientePF) ret.add(cliente);
+			}
+		}
+		else if (tipoCliente.equals("PJ")) {
+			for (Cliente cliente: this.listaClientes) {
+				if (cliente instanceof ClientePJ) ret.add(cliente);
+			}
+		} else {
+			ret = this.getListaClientes();
+		}
+		
+		return ret;
+	}
+	
+	public boolean gerarSinsitro() {
+		return false;
+	}
+	
+	public boolean vizualizarSinistro(String cliente) {
+		return false;
+	}
+	
+	public List<Sinistro> listarSinistros() {
+		return this.getListaSinistros();
 	}
 }

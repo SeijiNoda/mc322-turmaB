@@ -89,6 +89,6 @@ public class ClientePJ extends Cliente{
 	
 	@Override
 	public String toString() {
-		return String.format("Nome: %s\nCNPJ: %s\nFundacao: s%", this.getNome(), this.getCnpj(), this.getDataFundacao().toString());
+		return String.format("Nome: %s\nCNPJ: %s\nFundacao: %s", this.getNome(), this.getCnpj(), this.getDataFundacao().toString());
 	}
 }
