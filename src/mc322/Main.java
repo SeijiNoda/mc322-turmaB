@@ -1,6 +1,5 @@
 package mc322;
 
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -11,6 +10,7 @@ import mc322.cliente.ClientePJ;
 import mc322.seguradora.Seguradora;
 import mc322.sinistro.Sinistro;
 import mc322.veiculo.Veiculo;
+import mc322.utils.InputReader;
 
 public class Main {
 
@@ -36,14 +36,13 @@ public class Main {
 //		System.out.println("Email: " + seg1.getEmail());
 //		System.out.println("Endereco: " + seg1.getEndereco() + "\n");
 		
-		Scanner reader = new Scanner(System.in);
 		String comando;
 		do {
 			System.out.println("=========== Seguradora ===========");
 			System.out.println("1. [clientes] Clientes");
 			System.out.println("2. [sinistros] Sinistros");
 			System.out.println("3. [sair] Sair do programa");
-			comando = reader.nextLine();
+			comando = InputReader.lerString();
 			
 			switch(comando.toLowerCase()) {
 				case "sair": break;
@@ -54,41 +53,32 @@ public class Main {
 						System.out.println("1.1 [cadastrar] Cadastrar cliente");
 						System.out.println("1.2 [remover] Remover um cliente");
 						System.out.println("1.3 [listar] Listar Clientes");
-						System.out.println("1.4 [voltar] Voltar");
-						comandoInterno = reader.nextLine();
+						System.out.println("1.4 [veiculo] Adicionar veiculo");
+						System.out.println("1.5 [voltar] Voltar");
+						comandoInterno = InputReader.lerString();
 						
 						switch(comandoInterno.toLowerCase()) {
 							case "voltar": break;
 							case "cadastrar": {
-								System.out.print("Nome: ");
-								String nome = reader.nextLine();
+								String nome = InputReader.lerString("Nome: ");
 								
-								System.out.print("Endereco: ");
-								String endereco = reader.nextLine();
+								String endereco = InputReader.lerString("Endereco: ");
 								
 								Date dataLicensa = new Date();
 							
-								String tipo = "";
-								while (!(tipo.toUpperCase().equals("PF") | tipo.toUpperCase().equals("PJ"))) {
-									System.out.print("Pessoa Fisica ou Juridica? [PF/PJ]: ");
-									tipo = reader.nextLine();
-								}
+								String tipo = InputReader.lerTipoCliente();
 								
-								if (tipo.toUpperCase().equals("PF")) {
-									System.out.print("Educacao: ");
-									String educacao = reader.nextLine();
+								if (tipo.equals("PF")) {
+									String educacao = InputReader.lerString("Educacao: ");
 									
-									System.out.print("Genero: ");
-									String genero = reader.nextLine();
+									String genero = InputReader.lerString("Genero: ");
 									
-									System.out.print("Classe Economica: ");
-									String classeEconomica = reader.nextLine();
+									String classeEconomica = InputReader.lerString("Classe Economica: ");
 									
-									System.out.print("CPF: ");
-									String cpf = reader.nextLine();
-									
+									String cpf = InputReader.lerCPF();
+;									
 									//System.out.print("Aniversario [dd/mm/yyyy]: ");
-									//String dataNascimentoString = reader.nextLine();
+									//String dataNascimentoString = reader.nextLineimport java.text.DateFormat;();
 									Date dataNascimento = new Date();
 								
 									ClientePF novoCliente = new ClientePF(nome, endereco, dataLicensa, educacao, genero, classeEconomica, cpf, dataNascimento);
@@ -98,8 +88,7 @@ public class Main {
 										System.out.println("\nMENSAGEM: Jah existe cliente com CPF " + cpf + ".\n");
 									}
 								} else {
-									System.out.print("CNPJ: ");
-									String cnpj = reader.nextLine();
+									String cnpj = InputReader.lerCNPJ();
 									
 									// concertar
 									Date dataFundacao = new Date();
@@ -115,15 +104,10 @@ public class Main {
 								break;
 							}
 							case "remover": {
-								String tipo = "";
-								while (!(tipo.toUpperCase().equals("PF") | tipo.toUpperCase().equals("PJ"))) {
-									System.out.print("Pessoa Fisica ou Juridica? [PF/PJ]: ");
-									tipo = reader.nextLine();
-								}
+								String tipo = InputReader.lerTipoCliente();
 								
-								if (tipo.toUpperCase().equals("PF")) {
-									System.out.print("CPF do cliente a remover: ");
-									String cpf = reader.nextLine();
+								if (tipo.equals("PF")) {
+									String cpf = InputReader.lerCPF();
 									
 									ClientePF remover = new ClientePF("", "", new Date(), "", "", "", cpf, new Date());
 									
@@ -133,8 +117,7 @@ public class Main {
 										System.out.println("\nMENSAGEM: Cliente de CPF " + cpf + " nao encontrado.\n");
 									}
 								} else {
-									System.out.print("CNPJ do cliente a remover: ");
-									String cnpj = reader.nextLine();
+									String cnpj = InputReader.lerCNPJ();
 									
 									ClientePJ remover = new ClientePJ("", "", new Date(), "", "", "", cnpj, new Date());
 									
@@ -147,11 +130,7 @@ public class Main {
 								break;
 							}
 							case "listar": {
-								String tipo = "";
-								while (!(tipo.toUpperCase().equals("PF") | tipo.toUpperCase().equals("PJ") | tipo.toUpperCase().equals("TODOS"))) {
-									System.out.print("Deseja listar pessoas fisicas, juridicas ou todos? [PF/PJ/TODOS]: ");
-									tipo = reader.nextLine();
-								}
+								String tipo = InputReader.lerTipoCliente();
 								
 								List<Cliente> lista = seguradora.listarClientes(tipo);
 								if (lista.size() == 0) {
@@ -160,6 +139,21 @@ public class Main {
 									for (Cliente cliente: lista) {
 										System.out.println(cliente.toString() + "\n");
 									}
+								}
+								
+								break;
+							}
+							case "veiculo": {
+								String tipo = InputReader.lerTipoCliente();
+								
+								if (tipo.equals("PF")) {
+									String cpf = InputReader.lerCPF("CPF do cliente ao qual adicionar: ");
+									
+									
+								} else {
+									String cnpj = InputReader.lerCNPJ("CNPJ do cliente ao qual adicionar: ");
+									
+									
 								}
 								
 								break;
@@ -177,7 +171,7 @@ public class Main {
 						System.out.println("1.2 [remover] Remover um sinitros");
 						System.out.println("1.3 [listar] Listar sinistros");
 						System.out.println("1.4 [voltar] Voltar");
-						comandoInterno = reader.nextLine();
+						comandoInterno = InputReader.lerString();
 						
 						switch(comandoInterno.toLowerCase()) {
 							case "voltar": break;
@@ -188,7 +182,6 @@ public class Main {
 				}
 			}
 		} while (!comando.toLowerCase().equals("sair"));
-		reader.close();
 	}
 }
 	
