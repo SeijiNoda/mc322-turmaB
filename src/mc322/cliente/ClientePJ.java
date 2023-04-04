@@ -2,12 +2,14 @@ package mc322.cliente;
 
 import java.time.LocalDate;
 
+import mc322.veiculo.Veiculo;
+
 public class ClientePJ extends Cliente{
 	private final String cnpj;
 	private LocalDate dataFundacao;
 	
-	public ClientePJ(String nome, String endereco, LocalDate dataLicensa, String educacao, String genero, String classeEconomica, String cnpj, LocalDate dataFundacao) {
-		super(nome, endereco, dataLicensa, educacao, genero, classeEconomica);
+	public ClientePJ(String nome, String endereco, LocalDate dataLicensa, String cnpj, LocalDate dataFundacao) {
+		super(nome, endereco, dataLicensa);
 		this.cnpj = cnpj;
 		this.dataFundacao = dataFundacao;
 	}
@@ -89,6 +91,20 @@ public class ClientePJ extends Cliente{
 	
 	@Override
 	public String toString() {
-		return String.format("Nome: %s\nCNPJ: %s\nFundacao: %s", this.getNome(), this.getCnpj(), this.getDataFundacao().toString());
+		String ret = String.format("Nome: %s\nCNPJ: %s\nFundacao: %s", this.getNome(), this.getCnpj(), this.getDataFundacao().toString());
+		
+		int nmrVeiculos = this.getListaVeiculos().size();
+		if (nmrVeiculos > 0) {
+			ret += "\nVeiculos: [\n";
+			for (Veiculo veiculo: this.getListaVeiculos()) {
+				ret += veiculo.toString();
+				if (--nmrVeiculos > 0) {
+					ret += ",\n";
+				} else ret += "\n";
+			}
+			ret += "]";
+		}
+		
+		return ret;
 	}
 }

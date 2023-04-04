@@ -9,18 +9,12 @@ public class Cliente {
 	private String nome;
 	private String endereco;
 	private LocalDate dataLicensa;
-	private String educacao;
-	private String genero;
-	private String classeEconomica;
 	private List<Veiculo> listaVeiculos;
 	
-	public Cliente(String nome, String endereco, LocalDate dataLicensa, String educacao, String genero, String classeEconomica) {
+	public Cliente(String nome, String endereco, LocalDate dataLicensa) {
 		this.nome = nome;
 		this.endereco = endereco;
 		this.dataLicensa = dataLicensa;
-		this.educacao = educacao;
-		this.genero = genero;
-		this.classeEconomica = classeEconomica;
 		this.listaVeiculos = new ArrayList<Veiculo>();
 	}
 	
@@ -46,30 +40,6 @@ public class Cliente {
 
 	public void setDataLicensa(LocalDate dataLicensa) {
 		this.dataLicensa = dataLicensa;
-	}
-
-	public String getEducacao() {
-		return educacao;
-	}
-
-	public void setEducacao(String educacao) {
-		this.educacao = educacao;
-	}
-
-	public String getGenero() {
-		return genero;
-	}
-
-	public void setGenero(String genero) {
-		this.genero = genero;
-	}
-
-	public String getClasseEconomica() {
-		return classeEconomica;
-	}
-
-	public void setClasseEconomica(String classeEconomica) {
-		this.classeEconomica = classeEconomica;
 	}
 
 	public List<Veiculo> getListaVeiculos() {

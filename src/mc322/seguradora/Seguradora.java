@@ -89,22 +89,21 @@ public class Seguradora {
 		return true;
 	}
 	
-	public boolean removerCliente(Cliente remover) {
-		for(Cliente cliente: this.listaClientes) {
-			if (remover instanceof ClientePF && cliente instanceof ClientePF) {			
-				boolean cpfIgual = ((ClientePF) remover).getCpf().equals(((ClientePF) cliente).getCpf());
-				if (cpfIgual) {
-					this.listaClientes.remove(cliente);
-					return true;
-				}
-			} else if (remover instanceof ClientePJ && cliente instanceof ClientePJ) {		
-				boolean cnpjIgual = ((ClientePJ) remover).getCnpj().equals(((ClientePJ) cliente).getCnpj());
-				if (cnpjIgual) {
-					this.listaClientes.remove(cliente);
-					return true;
-				}
+	public boolean removerCliente(String key) {
+		key = key.replaceAll("[^0-9 ]", "");
+		int keySize = key.length();
+		boolean isCpf = keySize == 11;
+		boolean isCnpj = keySize == 14;
+		
+		if (!isCpf && !isCnpj) return false;
+		
+		for (Cliente cliente: this.listaClientes) {
+			if ((isCpf && ((ClientePF) cliente).getCpf().equals(key)) || (isCnpj && ((ClientePJ) cliente).getCnpj().equals(key))) {
+				this.listaClientes.remove(cliente);
+				return true;
 			}
 		}
+		
 		return false;
 	}
 	
@@ -165,6 +164,20 @@ public class Seguradora {
 	}
 	
 	public String toString() {
-		return String.format("%s - %s\n%s", this.getNome(), this.getTelefone(), this.getEndereco());
+		String ret = String.format("%s - %s\n%s", this.getNome(), this.getTelefone(), this.getEndereco());
+		
+		int nmrClientes = this.getListaClientes().size();
+		if (nmrClientes > 0) {
+			ret += "\nClientes: [\n";
+			for (Cliente cliente: this.getListaClientes()) {
+				ret += cliente.toString();
+				if (--nmrClientes > 0) {
+					ret += ",\n";
+				} else ret += "\n";
+			}
+			ret += "]";
+		}
+		
+		return ret;
 	}
 }

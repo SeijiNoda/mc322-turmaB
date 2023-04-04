@@ -1,15 +1,22 @@
 package mc322.cliente;
 
 import java.time.LocalDate;
+import mc322.veiculo.Veiculo;
 
 public class ClientePF extends Cliente{
 	private final String cpf;
 	private LocalDate dataNascimento;
+	private String educacao;
+	private String genero;
+	private String classeEconomica;
 	
 	public ClientePF(String nome, String endereco, LocalDate dataLicensa, String educacao, String genero, String classeEconomica, String cpf, LocalDate dataNascimento) {
-		super(nome, endereco, dataLicensa, educacao, genero, classeEconomica);
+		super(nome, endereco, dataLicensa);
 		this.cpf = cpf;
 		this.dataNascimento = dataNascimento;
+		this.educacao = educacao;
+		this.genero = genero;
+		this.classeEconomica = classeEconomica;
 	}
 	
 	public String getCpf() {
@@ -22,6 +29,30 @@ public class ClientePF extends Cliente{
 
 	public void setDataNascimento(LocalDate dataNascimento) {
 		this.dataNascimento = dataNascimento;
+	}
+	
+	public String getEducacao() {
+		return educacao;
+	}
+
+	public void setEducacao(String educacao) {
+		this.educacao = educacao;
+	}
+
+	public String getGenero() {
+		return genero;
+	}
+
+	public void setGenero(String genero) {
+		this.genero = genero;
+	}
+
+	public String getClasseEconomica() {
+		return classeEconomica;
+	}
+
+	public void setClasseEconomica(String classeEconomica) {
+		this.classeEconomica = classeEconomica;
 	}
 	
 	public boolean validarCPF(String cpf) {
@@ -75,8 +106,20 @@ public class ClientePF extends Cliente{
 	
 	@Override
 	public String toString() {
+		String ret = String.format("Nome: %s\nCPF: %s\nAniversario: %s", this.getNome(), this.getCpf(), this.getDataNascimento().toString());
 		
+		int nmrVeiculos = this.getListaVeiculos().size();
+		if (nmrVeiculos > 0) {
+			ret += "\nVeiculos: [\n";
+			for (Veiculo veiculo: this.getListaVeiculos()) {
+				ret += veiculo.toString();
+				if (--nmrVeiculos > 0) {
+					ret += ",\n";
+				} else ret += "\n";
+			}
+			ret += "]";
+		}
 		
-		return String.format("Nome: %s\nCPF: %s\nAniversario: %s", this.getNome(), this.getCpf(), this.getDataNascimento().toString());
+		return ret;
 	}
 }

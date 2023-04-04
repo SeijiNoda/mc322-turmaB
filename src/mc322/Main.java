@@ -14,26 +14,34 @@ import mc322.utils.InputReader;
 public class Main {
 
 	public static void main(String[] args) {
-		// instanciacao dos objetos das Classes Cliente, Veiculo, Sinistro, Seguradora e exibicao de suas propriedades
-		/*Cliente cli1 = new Cliente("Seiji", "502.289.268-58", "14/01/2004", 19, "Campinas - SP");
-		System.out.println(cli1.toString() + "\n");
-	
-		Veiculo vei1 = new Veiculo("EVR-8404", "Astra", "Chevrolet");
-		System.out.println("Placa: " + vei1.getPlaca());
-		System.out.println("Modelo: " + vei1.getModelo());
-		System.out.println("Marca: " + vei1.getMarca() + "\n");
-		
-		Sinistro sin1 = new Sinistro("14/03/2023", "Curitiba - PR");
-		System.out.println("ID: " + sin1.getId());
-		System.out.println("Data: " + sin1.getData());
-		System.out.println("Endereco: " + sin1.getEndereco() + "\n");
-		
-		*/
+		// Instanciar pelo menos 1 objeto da classe Seguradora
 		Seguradora seguradora = new Seguradora("Seguros do Jose", "46801563", "segjose@gmail.com", "Campinas - SP");
-//		System.out.println("Nome: " + seg1.getNome());
-//		System.out.println("Telefone: " + seg1.getTelefone());
-//		System.out.println("Email: " + seg1.getEmail());
-//		System.out.println("Endereco: " + seg1.getEndereco() + "\n");
+		
+		// Cadastrar e remover pelo menos um Cliente (ClientePF ou ClientePJ)
+		//   System.out.println(seguradora.toString());
+		ClientePF cliente1 = new ClientePF("Joao", "Rua dos Joaos - 111", LocalDate.now(), "EM", "M", "Media", "123.123.124-23", LocalDate.now());
+		seguradora.cadastrarCliente(cliente1);
+		//   System.out.println(seguradora.toString());
+		seguradora.removerCliente(cliente1.getCpf());
+		//   System.out.println(seguradora.toString());
+		
+		// Cadastrar pelo menos 2 clientes em Seguradora (sem remover), sendo 1 do tipo ClientePF e 1 do tipo ClientePJ;
+		ClientePF cliente2 = new ClientePF("Joao", "Rua dos Joaos - 111", LocalDate.now(), "EM", "M", "Media", "123.123.124-23", LocalDate.now());
+		seguradora.cadastrarCliente(cliente2);
+		ClientePJ cliente3 = new ClientePJ("Venda do Joao", "Rua dos Joaos - 111", LocalDate.now(), "12.312.312/0001-77", LocalDate.now());
+		seguradora.cadastrarCliente(cliente3);
+		//   System.out.println(seguradora.toString());
+		
+		// Adicionar pelo menos 1 Veiculo em cada Cliente instanciado
+		Veiculo veiculo1 = new Veiculo("ABC1234", "Fiat", "Fusca", 1983);
+		seguradora.adicionarVeiculo(veiculo1, "PF", cliente2.getCpf());
+		//   System.out.println(cliente2.toString());
+		Veiculo veiculo2 = new Veiculo("ABC1D23", "Calloi", "Bicicleta do grau", 2000);
+		seguradora.adicionarVeiculo(veiculo2, "PJ", cliente3.getCnpj());
+		//   System.out.println(cliente3.toString());
+		
+		// Gerar pelo menos 1 Sinistro
+		
 		
 		String comando;
 		do {
@@ -91,7 +99,7 @@ public class Main {
 									
 									LocalDate dataFundacao = InputReader.lerData("Data de fundacao: [dd/mm/yyyy]");
 									
-									ClientePJ novoCliente = new ClientePJ(nome, endereco, dataLicensa, "N/A", "N/A", "N/A", cnpj, dataFundacao);
+									ClientePJ novoCliente = new ClientePJ(nome, endereco, dataLicensa, cnpj, dataFundacao);
 									if (seguradora.cadastrarCliente(novoCliente)) {
 										System.out.println("\nMENSAGEM: " + nome + " cadastrado com sucesso!\n");
 									} else {
@@ -106,20 +114,16 @@ public class Main {
 								
 								if (tipo.equals("PF")) {
 									String cpf = InputReader.lerCPF();
-									
-									ClientePF remover = new ClientePF("", "", LocalDate.now(), "", "", "", cpf, LocalDate.now());
-									
-									if (seguradora.removerCliente(remover)) {
+
+									if (seguradora.removerCliente(cpf)) {
 										System.out.println("\nMENSAGEM: Cliente de CPF " + cpf + " removido com sucesso!\n");
 									} else {
 										System.out.println("\nMENSAGEM: Cliente de CPF " + cpf + " nao encontrado.\n");
 									}
 								} else {
 									String cnpj = InputReader.lerCNPJ();
-									
-									ClientePJ remover = new ClientePJ("", "", LocalDate.now(), "", "", "", cnpj, LocalDate.now());
-									
-									if (seguradora.removerCliente(remover)) {
+
+									if (seguradora.removerCliente(cnpj)) {
 										System.out.println("\nMENSAGEM: Cliente de CNPJ " + cnpj + " removido com sucesso!\n");
 									} else {
 										System.out.println("\nMENSAGEM: Cliente de CNPJ" + cnpj + " nao encontrado.\n");
@@ -144,14 +148,26 @@ public class Main {
 							case "adicionar": {
 								String tipo = InputReader.lerTipoCliente();
 								
-								if (tipo.equals("PF")) {
-									String cpf = InputReader.lerCPF("CPF do cliente ao qual adicionar: ");
-									
-									
+								String key = "";
+								if (tipo.equals("PF")) 
+									key = InputReader.lerCPF("CPF do cliente ao qual adicionar: ");
+								 else 
+									key = InputReader.lerCNPJ("CNPJ do cliente ao qual adicionar: ");
+								
+								String placa = InputReader.lerPlaca();
+								
+								String marca = InputReader.lerString("Marca: ");
+								
+								String modelo = InputReader.lerString("Modelo: ");
+								
+								int anoFabricacao = Integer.parseInt(InputReader.lerString("Ano de fabricacao: "));
+								
+								Veiculo novo = new Veiculo(placa, marca, modelo, anoFabricacao);
+								
+								if (seguradora.adicionarVeiculo(novo, tipo, key)) {
+									System.out.println("\nMENSAGEM: Veiculo novo adicionado com sucesso!\n");
 								} else {
-									String cnpj = InputReader.lerCNPJ("CNPJ do cliente ao qual adicionar: ");
-									
-									
+									System.out.println("\nMENSAGEM: Cliente jah possue veiculo com placa: " + placa +".\n");
 								}
 								
 								break;
@@ -170,7 +186,7 @@ public class Main {
 								if (seguradora.removerVeiculo(placa, tipo, key)) {
 									System.out.println("\nMENSAGEM: Veiculo de placa " + placa + " removido com sucesso!\n");
 								} else {
-									System.out.println("\nMENSAGEM: Nao encontramos veiculo com tal placa\n");
+									System.out.println("\nMENSAGEM: Nao encontramos veiculo com placa: " + placa + ".\n");
 								}
 								
 								break;
@@ -198,7 +214,7 @@ public class Main {
 					break;
 				}
 				case "exibir": {
-					System.out.println("/n" + seguradora.toString() + "/n");				
+					System.out.println(seguradora.toString());				
 					break;
 				}
 			}
