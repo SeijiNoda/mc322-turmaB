@@ -1,22 +1,22 @@
 package mc322.cliente;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class ClientePJ extends Cliente{
 	private final String cnpj;
-	private Date dataFundacao;
+	private LocalDate dataFundacao;
 	
-	public ClientePJ(String nome, String endereco, Date dataLicensa, String educacao, String genero, String classeEconomica, String cnpj, Date dataFundacao) {
+	public ClientePJ(String nome, String endereco, LocalDate dataLicensa, String educacao, String genero, String classeEconomica, String cnpj, LocalDate dataFundacao) {
 		super(nome, endereco, dataLicensa, educacao, genero, classeEconomica);
 		this.cnpj = cnpj;
 		this.dataFundacao = dataFundacao;
 	}
 
-	public Date getDataFundacao() {
+	public LocalDate getDataFundacao() {
 		return dataFundacao;
 	}
 
-	public void setDataFundacao(Date dataFundacao) {
+	public void setDataFundacao(LocalDate dataFundacao) {
 		this.dataFundacao = dataFundacao;
 	}
 
@@ -66,7 +66,7 @@ public class ClientePJ extends Cliente{
 			soma += atual * (5 - i);
 		}
 		
-		// e agora a segunda serie de multiplicacoes
+		// e agora continuamos com a segunda serie de multiplicacoes
 		// | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | -> String
 		// | 9 | 8 | 7 | 6 | 5 | 4 |  3 |  2 | -> multiplicar
 		for (int i = 4; i < 12; i++) {

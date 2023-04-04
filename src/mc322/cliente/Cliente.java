@@ -2,19 +2,19 @@ package mc322.cliente;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import mc322.veiculo.Veiculo;
 
 public class Cliente {
 	private String nome;
 	private String endereco;
-	private Date dataLicensa;
+	private LocalDate dataLicensa;
 	private String educacao;
 	private String genero;
 	private String classeEconomica;
 	private List<Veiculo> listaVeiculos;
 	
-	public Cliente(String nome, String endereco, Date dataLicensa, String educacao, String genero, String classeEconomica) {
+	public Cliente(String nome, String endereco, LocalDate dataLicensa, String educacao, String genero, String classeEconomica) {
 		this.nome = nome;
 		this.endereco = endereco;
 		this.dataLicensa = dataLicensa;
@@ -40,11 +40,11 @@ public class Cliente {
 		this.endereco = endereco;
 	}
 
-	public Date getDataLicensa() {
+	public LocalDate getDataLicensa() {
 		return dataLicensa;
 	}
 
-	public void setDataLicensa(Date dataLicensa) {
+	public void setDataLicensa(LocalDate dataLicensa) {
 		this.dataLicensa = dataLicensa;
 	}
 
@@ -78,6 +78,26 @@ public class Cliente {
 
 	public void setListaVeiculos(List<Veiculo> listaVeiculos) {
 		this.listaVeiculos = listaVeiculos;
+	}
+	
+	public boolean adicionarVeiculo(Veiculo novo) {
+		for (Veiculo veiculo: this.listaVeiculos) {
+			if (veiculo.getPlaca().equals(novo.getPlaca())) return false;
+		}
+		
+		this.listaVeiculos.add(novo);
+		return true;
+	}
+	
+	public boolean removerVeiculo(String placa) {
+		for (Veiculo veiculo: this.listaVeiculos) {
+			if (veiculo.getPlaca().equals(placa)) {
+				this.listaVeiculos.remove(veiculo);
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public String toString() {

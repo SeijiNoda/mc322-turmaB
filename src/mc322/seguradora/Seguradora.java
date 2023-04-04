@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import mc322.cliente.*;
 import mc322.sinistro.Sinistro;
+import mc322.veiculo.Veiculo;
 
 public class Seguradora {
 	private String nome;
@@ -126,6 +127,31 @@ public class Seguradora {
 		return ret;
 	}
 	
+	private Cliente acharCliente(String tipo, String key) {
+		for (Cliente cliente: this.listaClientes) {
+			if ( (tipo.equals("PF") && cliente instanceof ClientePF && ((ClientePF) cliente).getCpf().equals(key)) || 
+				 (tipo.equals("PJ") && cliente instanceof ClientePJ && ((ClientePJ) cliente).getCnpj().equals(key)) ) {
+				return cliente;
+			} 
+		}
+		
+		return null;
+	}
+	
+	public boolean adicionarVeiculo(Veiculo novo, String tipoCliente, String key) {
+		Cliente cliente = acharCliente(tipoCliente, key);
+		if (cliente == null) return false;
+		
+		return cliente.adicionarVeiculo(novo);
+	}
+	
+	public boolean removerVeiculo(String placa, String tipoCliente, String key) {
+		Cliente cliente = acharCliente(tipoCliente, key);
+		if (cliente == null) return false;
+		
+		return cliente.removerVeiculo(placa);
+	}
+	
 	public boolean gerarSinsitro() {
 		return false;
 	}
@@ -136,5 +162,9 @@ public class Seguradora {
 	
 	public List<Sinistro> listarSinistros() {
 		return this.getListaSinistros();
+	}
+	
+	public String toString() {
+		return String.format("%s - %s\n%s", this.getNome(), this.getTelefone(), this.getEndereco());
 	}
 }

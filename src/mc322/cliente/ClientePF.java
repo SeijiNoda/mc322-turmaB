@@ -1,12 +1,12 @@
 package mc322.cliente;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class ClientePF extends Cliente{
 	private final String cpf;
-	private Date dataNascimento;
+	private LocalDate dataNascimento;
 	
-	public ClientePF(String nome, String endereco, Date dataLicensa, String educacao, String genero, String classeEconomica, String cpf, Date dataNascimento) {
+	public ClientePF(String nome, String endereco, LocalDate dataLicensa, String educacao, String genero, String classeEconomica, String cpf, LocalDate dataNascimento) {
 		super(nome, endereco, dataLicensa, educacao, genero, classeEconomica);
 		this.cpf = cpf;
 		this.dataNascimento = dataNascimento;
@@ -16,11 +16,11 @@ public class ClientePF extends Cliente{
 		return cpf;
 	}
 
-	public Date getDataNascimento() {
+	public LocalDate getDataNascimento() {
 		return dataNascimento;
 	}
 
-	public void setDataNascimento(Date dataNascimento) {
+	public void setDataNascimento(LocalDate dataNascimento) {
 		this.dataNascimento = dataNascimento;
 	}
 	
