@@ -1,12 +1,19 @@
 package mc322.cliente;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import mc322.veiculo.Veiculo;
 
 public class ClientePJ extends Cliente{
 	private final String cnpj;
 	private LocalDate dataFundacao;
+	
+	public ClientePJ(String nome, String endereco, LocalDate dataLicensa, String cnpj, LocalDate dataFundacao, List<Veiculo> listaVeiculos) {
+		super(nome, endereco, dataLicensa, listaVeiculos);
+		this.cnpj = cnpj;
+		this.dataFundacao = dataFundacao;
+	}
 	
 	public ClientePJ(String nome, String endereco, LocalDate dataLicensa, String cnpj, LocalDate dataFundacao) {
 		super(nome, endereco, dataLicensa);
@@ -26,7 +33,7 @@ public class ClientePJ extends Cliente{
 		return cnpj;
 	}
 	
-	public boolean validarCNPJ(String cnpj) {
+	public static boolean validarCNPJ(String cnpj) {
 		// removemos todos os caracteres nao numericos com o regex
 		cnpj = cnpj.replaceAll("[^0-9 ]", "");
 				
@@ -41,8 +48,8 @@ public class ClientePJ extends Cliente{
 		
 		// calculamos os digitos verificadores
 
-		int primeiroVerificador = calcularDigitoVerificador(cnpj.substring(0, 12));
-		int segundoVerificador = calcularDigitoVerificador(cnpj.substring(1, 13));
+		int primeiroVerificador = calcularDigitoVerificador(cnpj.substring(0, 12), 0);
+		int segundoVerificador = calcularDigitoVerificador(cnpj.substring(0, 13), 1);
 		
 		// verificamos se os digitos finais passados batem com os calculados
 		if (Character.getNumericValue(cnpj.charAt(12)) != primeiroVerificador) return false;
@@ -52,9 +59,9 @@ public class ClientePJ extends Cliente{
 		return true;
 	}
 
-	private int calcularDigitoVerificador(String numeros) {
+	private static int calcularDigitoVerificador(String numeros, int offset) {
 		// verificamos o comprimento da string parametro
-		if (numeros.length() != 12) return -1;
+		if (numeros.length() != 12 + offset) return -1;
 		
 		// inicalizamos a variavel "soma" que armazenara os resultados das multiplicacoes
 		int soma = 0;
@@ -62,21 +69,21 @@ public class ClientePJ extends Cliente{
 		// realizamos a primeira serie de multiplicacoes 
 		// | 0 | 1 | 2 | 3 | -> String
 		// | 5 | 4 | 3 | 2 | -> multiplicar
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 4 + offset; i++) {
 			int atual = Character.getNumericValue(numeros.charAt(i));
 			
-			soma += atual * (5 - i);
+			soma += atual * (5 + offset - i);
 		}
 		
 		// e agora continuamos com a segunda serie de multiplicacoes
 		// | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | -> String
 		// | 9 | 8 | 7 | 6 | 5 | 4 |  3 |  2 | -> multiplicar
-		for (int i = 4; i < 12; i++) {
+		for (int i = 4 + offset; i < 12 + offset; i++) {
 			// calculamos a soma do digito verificador
 			int atual = Character.getNumericValue(numeros.charAt(i));		
 			
 			// adiciona-se 4 para "zerar" i para 0
-			soma += atual * (9 + 4 - i);
+			soma += atual * (9 + 4 + offset - i);
 		}			
 		
 		// pegamos o resto da soma / 11

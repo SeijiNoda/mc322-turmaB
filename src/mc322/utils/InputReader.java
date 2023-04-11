@@ -4,6 +4,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+
+import mc322.cliente.ClientePF;
+import mc322.cliente.ClientePJ;
+
 import java.util.regex.Matcher;
 
 public class InputReader {
@@ -23,12 +27,14 @@ public class InputReader {
 		
 		String ret = "";
 		boolean regex = false;
-		while (!regex) {
+		boolean ehValido = false;
+		while (!regex || !ehValido) {
 			System.out.print("CPF: ");
 			ret = reader.nextLine();
 			
 			Matcher matcher = padraoCpf.matcher(ret);
 			regex = matcher.matches();
+			ehValido = ClientePF.validarCPF(ret);
 		}
 		
 		return ret;
@@ -39,12 +45,14 @@ public class InputReader {
 		
 		String ret = "";
 		boolean regex = false;
-		while (!regex) {
+		boolean ehValido = false;
+		while (!regex || !ehValido) {
 			System.out.print(msg);
 			ret = reader.nextLine();
 			
 			Matcher matcher = padraoCpf.matcher(ret);
 			regex = matcher.matches();
+			ehValido = ClientePF.validarCPF(ret);
 		}
 		
 		return ret;
@@ -55,12 +63,14 @@ public class InputReader {
 		
 		String ret = "";
 		boolean regex = false;
-		while (!regex) {
+		boolean ehValido = false;
+		while (!regex || !ehValido) {
 			System.out.print("CNPJ: ");
 			ret = reader.nextLine();
 			
 			Matcher matcher = padraoCnpj.matcher(ret);
 			regex = matcher.matches();
+			ehValido = ClientePJ.validarCNPJ(ret);
 		}
 		
 		return ret;
@@ -71,12 +81,14 @@ public class InputReader {
 		
 		String ret = "";
 		boolean regex = false;
-		while (!regex) {
+		boolean ehValido = false;
+		while (!regex || !ehValido) {
 			System.out.print(msg);
 			ret = reader.nextLine();
 			
 			Matcher matcher = padraoCnpj.matcher(ret);
 			regex = matcher.matches();
+			ehValido = ClientePJ.validarCNPJ(ret);
 		}
 		
 		return ret;

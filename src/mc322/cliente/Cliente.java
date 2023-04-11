@@ -11,6 +11,13 @@ public class Cliente {
 	private LocalDate dataLicensa;
 	private List<Veiculo> listaVeiculos;
 	
+	public Cliente(String nome, String endereco, LocalDate dataLicensa, List<Veiculo> listaVeiculos) {
+		this.nome = nome;
+		this.endereco = endereco;
+		this.dataLicensa = dataLicensa;
+		this.listaVeiculos = listaVeiculos;
+	}
+	
 	public Cliente(String nome, String endereco, LocalDate dataLicensa) {
 		this.nome = nome;
 		this.endereco = endereco;

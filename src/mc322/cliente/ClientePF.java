@@ -1,6 +1,8 @@
 package mc322.cliente;
 
 import java.time.LocalDate;
+import java.util.List;
+
 import mc322.veiculo.Veiculo;
 
 public class ClientePF extends Cliente{
@@ -9,6 +11,15 @@ public class ClientePF extends Cliente{
 	private String educacao;
 	private String genero;
 	private String classeEconomica;
+	
+	public ClientePF(String nome, String endereco, LocalDate dataLicensa, String educacao, String genero, String classeEconomica, String cpf, LocalDate dataNascimento, List<Veiculo> listaVeiculos) {
+		super(nome, endereco, dataLicensa, listaVeiculos);
+		this.cpf = cpf;
+		this.dataNascimento = dataNascimento;
+		this.educacao = educacao;
+		this.genero = genero;
+		this.classeEconomica = classeEconomica;
+	}
 	
 	public ClientePF(String nome, String endereco, LocalDate dataLicensa, String educacao, String genero, String classeEconomica, String cpf, LocalDate dataNascimento) {
 		super(nome, endereco, dataLicensa);
@@ -55,7 +66,7 @@ public class ClientePF extends Cliente{
 		this.classeEconomica = classeEconomica;
 	}
 	
-	public boolean validarCPF(String cpf) {
+	public static boolean validarCPF(String cpf) {
 		// removemos todos os caracteres nao numericos com o regex
 		cpf = cpf.replaceAll("[^0-9 ]", "");
 				
@@ -81,7 +92,7 @@ public class ClientePF extends Cliente{
 		return true;
 	}
 
-	private int calcularDigitoVerificador(String numeros) {
+	private static int calcularDigitoVerificador(String numeros) {
 		// verificamos o comprimento da string parametro
 		if (numeros.length() != 9) return -1;
 		

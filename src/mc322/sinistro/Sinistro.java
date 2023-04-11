@@ -1,5 +1,6 @@
 package mc322.sinistro;
 
+import java.time.LocalDate;
 import java.util.Random;
 
 import mc322.seguradora.Seguradora;
@@ -9,27 +10,30 @@ import mc322.cliente.Cliente;
 public class Sinistro {
 	private static int cont = 0;
 	private final int id;
-	private String data;
+	private LocalDate data;
 	private String endereco;
 	private Seguradora seguradora;
 	private Veiculo veiculo;
 	private Cliente cliente;
 	
-	public Sinistro(String data, String endereco) {
+	public Sinistro(LocalDate data, String endereco, Seguradora seguradora, Veiculo veiculo, Cliente cliente) {
 		this.id = ++cont;
 		this.data = data;
 		this.endereco = endereco;
+		this.seguradora = seguradora;
+		this.cliente = cliente;
+		this.veiculo = veiculo;
 	}
 	
 	public int getId() {
 		return id;
 	}
 	
-	public String getData() {
+	public LocalDate getData() {
 		return data;
 	}
 	
-	public void setData(String data) {
+	public void setData(LocalDate data) {
 		this.data = data;
 	}
 	
@@ -80,6 +84,6 @@ public class Sinistro {
 	}
 	
 	public String toString() {
-		return String.format("Sinistro %d de %s ocorrido em %s.", this.getId(), this.getCliente().getNome(), this.getData());
+		return String.format("Sinistro de ID: %d de %s ocorrido em %s.", this.getId(), this.getCliente().getNome(), this.getData());
 	}
 }

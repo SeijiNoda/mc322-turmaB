@@ -1,6 +1,7 @@
 package mc322.seguradora;
 
 import java.util.List;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import mc322.cliente.*;
@@ -90,16 +91,29 @@ public class Seguradora {
 	}
 	
 	public boolean removerCliente(String key) {
-		key = key.replaceAll("[^0-9 ]", "");
-		int keySize = key.length();
-		boolean isCpf = keySize == 11;
-		boolean isCnpj = keySize == 14;
+		String tipo = getTipoCliente(key);
+		boolean isCpf = tipo.equals("PF");
+		boolean isCnpj = tipo.equals("PJ");
 		
 		if (!isCpf && !isCnpj) return false;
 		
 		for (Cliente cliente: this.listaClientes) {
 			if ((isCpf && ((ClientePF) cliente).getCpf().equals(key)) || (isCnpj && ((ClientePJ) cliente).getCnpj().equals(key))) {
+				
 				this.listaClientes.remove(cliente);
+				
+				if (cliente.getListaVeiculos().size() > 0) {
+				
+					// remover tb os sinistros com a key caso haja sinistros
+					for (Sinistro sinistro: this.listaSinistros) {
+						Cliente atual = sinistro.getCliente();
+						if ( (isCpf && atual instanceof ClientePF && ((ClientePF) atual).getCpf().equals(key)) || ( isCnpj && atual instanceof ClientePJ && ((ClientePJ) atual).getCnpj().equals(key)) ) {
+								this.listaSinistros.remove(sinistro);
+								break;
+						} 
+					}
+				}
+				
 				return true;
 			}
 		}
@@ -126,7 +140,9 @@ public class Seguradora {
 		return ret;
 	}
 	
-	private Cliente acharCliente(String tipo, String key) {
+	private Cliente acharCliente(String key) {
+		String tipo = getTipoCliente(key);
+		
 		for (Cliente cliente: this.listaClientes) {
 			if ( (tipo.equals("PF") && cliente instanceof ClientePF && ((ClientePF) cliente).getCpf().equals(key)) || 
 				 (tipo.equals("PJ") && cliente instanceof ClientePJ && ((ClientePJ) cliente).getCnpj().equals(key)) ) {
@@ -137,25 +153,59 @@ public class Seguradora {
 		return null;
 	}
 	
-	public boolean adicionarVeiculo(Veiculo novo, String tipoCliente, String key) {
-		Cliente cliente = acharCliente(tipoCliente, key);
+	private Veiculo acharVeiculo(Cliente cliente, String placa) {
+		for (Veiculo veiculo: cliente.getListaVeiculos()) {
+			if (veiculo.getPlaca().equals(placa)) return veiculo;
+		}
+		
+		return null;
+	}
+	
+	private String getTipoCliente(String key) {
+		key = key.replaceAll("[^0-9 ]", "");
+		int keySize = key.length();
+		boolean isCpf = keySize == 11;
+		boolean isCnpj = keySize == 14;
+		
+		if (!isCpf && !isCnpj) return "";
+		else if (isCpf) return "PF";
+		else return "PJ";
+	}
+	
+	public boolean adicionarVeiculo(Veiculo novo, String key) {
+		Cliente cliente = acharCliente(key);
 		if (cliente == null) return false;
 		
 		return cliente.adicionarVeiculo(novo);
 	}
 	
-	public boolean removerVeiculo(String placa, String tipoCliente, String key) {
-		Cliente cliente = acharCliente(tipoCliente, key);
+	public boolean removerVeiculo(String placa, String key) {
+		Cliente cliente = acharCliente(key);
 		if (cliente == null) return false;
 		
 		return cliente.removerVeiculo(placa);
 	}
 	
-	public boolean gerarSinsitro() {
-		return false;
+	public boolean gerarSinsitro(LocalDate data, String placa, String endereco, String key) {
+		Cliente cliente = acharCliente(key);
+		if (cliente == null) return false;
+		
+		Veiculo veiculo = acharVeiculo(cliente, placa);
+		if (veiculo == null) return false;
+		
+		Sinistro novo = new Sinistro(data, endereco, this, veiculo, cliente);
+		this.listaSinistros.add(novo);		
+		return true;
 	}
 	
-	public boolean vizualizarSinistro(String cliente) {
+	// existeSinsitro
+	public boolean vizualizarSinistro(String key) {
+		Cliente cliente = acharCliente(key);		
+		
+		for (Sinistro sinistro: this.listaSinistros) {
+			if (sinistro.getCliente() == cliente) return true;
+		}
+		
 		return false;
 	}
 	
