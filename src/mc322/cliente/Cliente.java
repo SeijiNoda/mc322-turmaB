@@ -57,16 +57,21 @@ public class Cliente {
 		this.listaVeiculos = listaVeiculos;
 	}
 	
+	// Metodo boolean para adicionar um novo veiculo na lista de veiculos do cliente
 	public boolean adicionarVeiculo(Veiculo novo) {
+		// Percorre a lista de veiculos para ver se a placa do novo veiculo nao eh repetida
 		for (Veiculo veiculo: this.listaVeiculos) {
 			if (veiculo.getPlaca().equals(novo.getPlaca())) return false;
 		}
 		
+		// Se nao for, adiciona o novo veiculo a lisa
 		this.listaVeiculos.add(novo);
 		return true;
 	}
 	
+	// Metodo boolean para remover um veiculo dado sua placa
 	public boolean removerVeiculo(String placa) {
+		// Percorremos a lista de veiculos ateh achar um veiculo com a placa desejada, e entao o removemos
 		for (Veiculo veiculo: this.listaVeiculos) {
 			if (veiculo.getPlaca().equals(placa)) {
 				this.listaVeiculos.remove(veiculo);
@@ -74,6 +79,7 @@ public class Cliente {
 			}
 		}
 		
+		// Senao encontrarmos, retornamos false
 		return false;
 	}
 	
