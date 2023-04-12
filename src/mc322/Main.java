@@ -14,6 +14,8 @@ import mc322.utils.InputReader;
 public class Main {
 
 	public static void main(String[] args) {
+		// Instanciamos alguns valores para o programa logo abaixo já possuir alguns objetos quando iniciar
+		
 		// Instanciar pelo menos 1 objeto da classe Seguradora
 		Seguradora seguradora = new Seguradora("Seguros do Jose", "46801563", "segjose@gmail.com", "Campinas - SP");
 		
@@ -40,6 +42,20 @@ public class Main {
 		seguradora.adicionarVeiculo(veiculo2, cliente3.getCnpj());
 		//   System.out.println(cliente3.toString());
 		
+		
+		/*
+		 * Aqui explico a logica por tras de todos os menus:
+		 *    Temos aqui um do-while cujo condicional eh uma igualdade entre a String comando,
+		 *    que recebe uma String digitada pelo usuario, e um comando estabelecido por mim para
+		 *    ser um comando de parada.
+		 * Neste caso inicial, temos o menu principal executando ateh que a String comando assuma
+		 * o valor "sair". No menu de clientes, o comando de parada eh "voltar". etc.  
+		 * 
+		 * Alem do loop do menu, temos em cada um deles um switch-case dependente do comando lido,
+		 * que vai executar o comportamento adequado para cada comando
+		 * */		
+		
+		// Menu de opcoes GERAL
 		String comando;
 		do {
 			System.out.println("=========== Seguradora ===========");
@@ -52,6 +68,8 @@ public class Main {
 			switch(comando.toLowerCase()) {
 				case "sair": break;
 				case "clientes": {
+					// Menu de opcoes para CLIENTES
+					
 					String comandoInterno = "";
 					do {
 						System.out.println("============ Clientes ============");
@@ -66,6 +84,9 @@ public class Main {
 						switch(comandoInterno.toLowerCase()) {
 							case "voltar": break;
 							case "cadastrar": {
+								// Tratamento do comando de cadastro, pedimos as informacoes gerais e depois as especificas,
+								// e assim respondemos de acordo com resultado da funcao de cadastrar
+								
 								String nome = InputReader.lerString("Nome: ");
 								
 								String endereco = InputReader.lerString("Endereco: ");
@@ -107,28 +128,31 @@ public class Main {
 								break;
 							}
 							case "deletar": {
-								String tipo = InputReader.lerTipoCliente();
+								// Aqui tentamos deletar um cliente dado seu CPF/CNPJ
 								
-								if (tipo.equals("PF")) {
-									String cpf = InputReader.lerCPF();
+								String tipo = InputReader.lerTipoCliente();
 
-									if (seguradora.removerCliente(cpf)) {
-										System.out.println("\nMENSAGEM: Cliente de CPF " + cpf + " removido com sucesso!\n");
-									} else {
-										System.out.println("\nMENSAGEM: Cliente de CPF " + cpf + " nao encontrado.\n");
-									}
+								String key = "";
+								
+								if (tipo.equals("PF"))
+									key = InputReader.lerCPF();	
+								else 
+									key = InputReader.lerCNPJ();
+								
+								String ret;
+								if (seguradora.removerCliente(key)) {
+									ret = String.format("\nMENSAGEM: Cliente de %s %s removido com sucesso!\n", tipo.equals("PF") ? "CPF" : "CNPJ" ,key);
 								} else {
-									String cnpj = InputReader.lerCNPJ();
-
-									if (seguradora.removerCliente(cnpj)) {
-										System.out.println("\nMENSAGEM: Cliente de CNPJ " + cnpj + " removido com sucesso!\n");
-									} else {
-										System.out.println("\nMENSAGEM: Cliente de CNPJ" + cnpj + " nao encontrado.\n");
-									}
+									ret = String.format("\nMENSAGEM: Cliente de %s %s nao encontrado.\n", tipo.equals("PF") ? "CPF" : "CNPJ", key);
 								}
+								
+								System.out.println(ret);
+								
 								break;
 							}
 							case "listar": {
+								// Aqui listamos todos os clientes segundo um filtro de seu tipo (PF ou PJ)
+								
 								String tipo = InputReader.lerTipoCliente();
 								
 								List<Cliente> lista = seguradora.listarClientes(tipo);
@@ -143,6 +167,8 @@ public class Main {
 								break;
 							}
 							case "adicionar": {
+								// Aqui tentamos adicionar um novo veiculo a um cliente dado as informacoes pedidas abaixo
+								
 								String tipo = InputReader.lerTipoCliente();
 								
 								String key = "";
@@ -161,6 +187,7 @@ public class Main {
 								
 								Veiculo novo = new Veiculo(placa, marca, modelo, anoFabricacao);
 								
+								// Verificamos o resultado do metodo de adicionar e informamos o usuario de acordo
 								if (seguradora.adicionarVeiculo(novo, key)) {
 									System.out.println("\nMENSAGEM: Veiculo novo adicionado com sucesso!\n");
 								} else {
@@ -170,6 +197,8 @@ public class Main {
 								break;
 							}
 							case "remover": {
+								// Aqui tentamos remover veiculo de um cliente dado as informacoes pedidas abaixo
+								
 								String tipo = InputReader.lerTipoCliente();
 								
 								String key = "";
@@ -180,6 +209,7 @@ public class Main {
 								
 								String placa = InputReader.lerPlaca("Placa do veiculo a remover: ");
 								
+								// Verificamos o resultado da tentativa de remocao e informamos o usuario de acordo
 								if (seguradora.removerVeiculo(placa, key)) {
 									System.out.println("\nMENSAGEM: Veiculo de placa " + placa + " removido com sucesso!\n");
 								} else {
@@ -194,6 +224,8 @@ public class Main {
 					break;
 				}
 				case "sinistros": {
+					// Menu de opcoes para os SINISTROS
+					
 					String comandoInterno = "";
 					do {
 						System.out.println("=========== Sinistros ===========");
@@ -206,7 +238,9 @@ public class Main {
 						switch(comandoInterno.toLowerCase()) {
 							case "voltar": break;
 							case "cadastrar": {
+								// Aqui tentamos cadastrar um novo sinistro
 								
+								// Dados para o novo sinistro
 								String key = "";
 								
 								String tipo = InputReader.lerTipoCliente();
@@ -222,6 +256,7 @@ public class Main {
 								
 								String endereco = InputReader.lerString("Endereco do acidente: ");
 								
+								// Verificamos o resultado de nossa tentativa de cadastro e informamos o usuario de acordo com tal resutlado
 								if (seguradora.gerarSinsitro(data, placa, endereco, key)) {
 									System.out.println("\nMENSAGEM: Sinistro registrado com sucesso!\n");
 								} else {
@@ -231,6 +266,8 @@ public class Main {
 								break;
 							}
 							case "verificar": {
+								// Aqui verificamos se existe sinistro para certo cliente
+								
 								String key = "";
 								
 								String tipo = InputReader.lerTipoCliente();
@@ -251,6 +288,8 @@ public class Main {
 								break;
 							}
 							case "listar": {
+								// Aqui listamos todos os sinistros da seguradora que foram retornados pela chamada de metodo abaixo
+								
 								List<Sinistro> sinistros = seguradora.listarSinistros();
 								
 								if (sinistros.size() <= 0) {
@@ -269,6 +308,8 @@ public class Main {
 					break;
 				}
 				case "exibir": {
+					// Caso para o comando "exibir", que mostra os detalhes da Seguradora em questao
+					
 					System.out.println(seguradora.toString());				
 					break;
 				}
