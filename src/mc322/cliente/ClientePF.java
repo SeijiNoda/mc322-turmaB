@@ -1,8 +1,10 @@
 package mc322.cliente;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
+import mc322.seguradora.CalcSeguro;
 import mc322.veiculo.Veiculo;
 
 public class ClientePF extends Cliente{
@@ -11,14 +13,16 @@ public class ClientePF extends Cliente{
 	private String educacao;
 	private String genero;
 	private String classeEconomica;
+	private LocalDate dataLicensa;
 	
 	public ClientePF(String nome, String endereco, LocalDate dataLicensa, String educacao, String genero, String classeEconomica, String cpf, LocalDate dataNascimento, List<Veiculo> listaVeiculos) {
-		super(nome, endereco, dataLicensa, listaVeiculos);
+		super(nome, endereco, listaVeiculos);
 		this.cpf = cpf;
 		this.dataNascimento = dataNascimento;
 		this.educacao = educacao;
 		this.genero = genero;
 		this.classeEconomica = classeEconomica;
+		this.dataLicensa = dataLicensa;
 	}
 	
 	public ClientePF(String nome, String endereco, LocalDate dataLicensa, String educacao, String genero, String classeEconomica, String cpf, LocalDate dataNascimento) {
@@ -64,6 +68,14 @@ public class ClientePF extends Cliente{
 
 	public void setClasseEconomica(String classeEconomica) {
 		this.classeEconomica = classeEconomica;
+	}
+	
+	public LocalDate getDataLicensa() {
+		return dataLicensa;
+	}
+
+	public void setDataLicensa(LocalDate dataLicensa) {
+		this.dataLicensa = dataLicensa;
 	}
 	
 	public static boolean validarCPF(String cpf) {
@@ -115,9 +127,29 @@ public class ClientePF extends Cliente{
 		return 11 - resto;
 	}
 	
+	public double calcularScore() {
+		int qtdVeiculos = this.getQtdVeiculos();
+		int idade = calcularIdade();
+		double FATOR_IDADE;
+		
+		if (idade >= 60) {
+			FATOR_IDADE = CalcSeguro.FATOR_60_90.getValor();
+		} else if (idade >= 30) {
+			FATOR_IDADE = CalcSeguro.FATOR_30_60.getValor();
+		} else {
+			FATOR_IDADE = CalcSeguro.FATOR_18_30.getValor();
+		}
+		
+		return CalcSeguro.VALOR_BASE.getValor() * FATOR_IDADE * qtdVeiculos;
+	}
+	
+	private int calcularIdade() {
+		return Period.between(this.dataNascimento, LocalDate.now()).getYears();
+	}
+	
 	@Override
 	public String toString() {
-		String ret = String.format("Nome: %s\nCPF: %s\nAniversario: %s", this.getNome(), this.getCpf(), this.getDataNascimento().toString());
+		String ret = String.format("Nome: %s\nCPF: %s\nAniversario: %s\nValor seguro: R$%s", this.getNome(), this.getCpf(), this.getDataNascimento().toString(), this.getValorSeguro());
 		
 		int nmrVeiculos = this.getListaVeiculos().size();
 		if (nmrVeiculos > 0) {

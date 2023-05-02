@@ -6,10 +6,10 @@ import java.util.List;
 import mc322.cliente.Cliente;
 import mc322.cliente.ClientePF;
 import mc322.cliente.ClientePJ;
+import mc322.leitor.InputReader;
 import mc322.seguradora.Seguradora;
 import mc322.sinistro.Sinistro;
 import mc322.veiculo.Veiculo;
-import mc322.utils.InputReader;
 
 public class Main {
 
@@ -28,7 +28,7 @@ public class Main {
 		//   System.out.println(seguradora.toString());
 		
 		// Cadastrar pelo menos 2 clientes em Seguradora (sem remover), sendo 1 do tipo ClientePF e 1 do tipo ClientePJ;
-		ClientePF cliente2 = new ClientePF("Joao", "Rua dos Joaos - 111", LocalDate.now(), "EM", "M", "Media", "976.573.830-70", LocalDate.now());
+		ClientePF cliente2 = new ClientePF("Joao", "Rua dos Joaos - 111", LocalDate.now(), "EM", "M", "Media", "97657383070", LocalDate.now());
 		seguradora.cadastrarCliente(cliente2);
 		ClientePJ cliente3 = new ClientePJ("Venda do Joao", "Rua dos Joaos - 111", LocalDate.now(), "86.658.785/0001-00", LocalDate.now());
 		seguradora.cadastrarCliente(cliente3);
@@ -87,7 +87,7 @@ public class Main {
 								// Tratamento do comando de cadastro, pedimos as informacoes gerais e depois as especificas,
 								// e assim respondemos de acordo com resultado da funcao de cadastrar
 								
-								String nome = InputReader.lerString("Nome: ");
+								String nome = InputReader.lerNome();
 								
 								String endereco = InputReader.lerString("Endereco: ");
 								

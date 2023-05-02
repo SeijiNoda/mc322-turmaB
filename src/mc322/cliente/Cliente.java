@@ -8,20 +8,19 @@ import mc322.veiculo.Veiculo;
 public class Cliente {
 	private String nome;
 	private String endereco;
-	private LocalDate dataLicensa;
 	private List<Veiculo> listaVeiculos;
+	private double valorSeguro;
 	
-	public Cliente(String nome, String endereco, LocalDate dataLicensa, List<Veiculo> listaVeiculos) {
+	public Cliente(String nome, String endereco, List<Veiculo> listaVeiculos) {
 		this.nome = nome;
 		this.endereco = endereco;
-		this.dataLicensa = dataLicensa;
 		this.listaVeiculos = listaVeiculos;
+		this.valorSeguro = 0;
 	}
 	
 	public Cliente(String nome, String endereco, LocalDate dataLicensa) {
 		this.nome = nome;
 		this.endereco = endereco;
-		this.dataLicensa = dataLicensa;
 		this.listaVeiculos = new ArrayList<Veiculo>();
 	}
 	
@@ -41,14 +40,6 @@ public class Cliente {
 		this.endereco = endereco;
 	}
 
-	public LocalDate getDataLicensa() {
-		return dataLicensa;
-	}
-
-	public void setDataLicensa(LocalDate dataLicensa) {
-		this.dataLicensa = dataLicensa;
-	}
-
 	public List<Veiculo> getListaVeiculos() {
 		return listaVeiculos;
 	}
@@ -57,6 +48,18 @@ public class Cliente {
 		this.listaVeiculos = listaVeiculos;
 	}
 	
+	public int getQtdVeiculos() {
+		return listaVeiculos.size();
+	}
+	
+	public double getValorSeguro() {
+		return this.valorSeguro;
+	}
+	
+	public void setValorSeguro(double valor) {
+		this.valorSeguro = valor;
+	}
+ 	
 	// Metodo boolean para adicionar um novo veiculo na lista de veiculos do cliente
 	public boolean adicionarVeiculo(Veiculo novo) {
 		// Percorre a lista de veiculos para ver se a placa do novo veiculo nao eh repetida
@@ -83,9 +86,13 @@ public class Cliente {
 		return false;
 	}
 	
+	public double calcularScore() {
+		return 0.0;
+	}
+	
 	public String toString() {
 		// usamos String.format() para concatenar a string de retorno
-		return String.format("Nome: %s\nEndereco: %s", 
-							 this.getNome(), this.getEndereco());
+		return String.format("Nome: %s\nEndereco: %s\nSeguro: R$%s", 
+							 this.getNome(), this.getEndereco(), this.getValorSeguro());
 	}
 }

@@ -3,16 +3,19 @@ package mc322.cliente;
 import java.time.LocalDate;
 import java.util.List;
 
+import mc322.seguradora.CalcSeguro;
 import mc322.veiculo.Veiculo;
 
 public class ClientePJ extends Cliente{
 	private final String cnpj;
 	private LocalDate dataFundacao;
+	private int qtdFuncionarios;
 	
-	public ClientePJ(String nome, String endereco, LocalDate dataLicensa, String cnpj, LocalDate dataFundacao, List<Veiculo> listaVeiculos) {
-		super(nome, endereco, dataLicensa, listaVeiculos);
+	public ClientePJ(String nome, String endereco, String cnpj, LocalDate dataFundacao, List<Veiculo> listaVeiculos, int qtdFuncionarios) {
+		super(nome, endereco, listaVeiculos);
 		this.cnpj = cnpj;
 		this.dataFundacao = dataFundacao;
+		this.qtdFuncionarios = qtdFuncionarios;
 	}
 	
 	public ClientePJ(String nome, String endereco, LocalDate dataLicensa, String cnpj, LocalDate dataFundacao) {
@@ -96,9 +99,24 @@ public class ClientePJ extends Cliente{
 		return 11 - resto;
 	}
 	
+	public int getQtdFuncionarios() {
+		return this.qtdFuncionarios;
+	}
+	
+	public void setQtdFuncionarios(int novaQtd) {
+		this.qtdFuncionarios = novaQtd;
+	}
+	
+	public double calcularScore() {
+		int qtdVeiculos = this.getQtdVeiculos();
+		int qtdFuncs = this.getQtdFuncionarios();
+		
+		return CalcSeguro.VALOR_BASE.getValor() * (1 + (qtdFuncs/100)) * qtdVeiculos;
+	}
+	
 	@Override
 	public String toString() {
-		String ret = String.format("Nome: %s\nCNPJ: %s\nFundacao: %s", this.getNome(), this.getCnpj(), this.getDataFundacao().toString());
+		String ret = String.format("Nome: %s\nCNPJ: %s\nFundacao: %s\nValor seguro: R$%s", this.getNome(), this.getCnpj(), this.getDataFundacao().toString(), this.getValorSeguro());
 		
 		int nmrVeiculos = this.getListaVeiculos().size();
 		if (nmrVeiculos > 0) {

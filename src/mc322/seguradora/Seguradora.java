@@ -79,11 +79,9 @@ public class Seguradora {
 		for(Cliente cliente: this.listaClientes) {
 			// verificamos se o CPF eh repetido e depois se o CNPJ eh
 			if (novo instanceof ClientePF && cliente instanceof ClientePF) {
-				
 				boolean cpfIgual = ((ClientePF) novo).getCpf().equals(((ClientePF) cliente).getCpf());
 				if (cpfIgual) return false;
 			} else if (novo instanceof ClientePJ && cliente instanceof ClientePJ) {
-				
 				boolean cnpjIgual = ((ClientePJ) novo).getCnpj().equals(((ClientePJ) cliente).getCnpj());
 				if (cnpjIgual) return false;
 			}
@@ -91,6 +89,12 @@ public class Seguradora {
 		
 		// Se o CPF/CNPJ do novo cliente nao for repetido, adicionamos ele na lista de clientes da seguradora
 		this.listaClientes.add(novo);
+		
+		//System.out.println("\n\nMSG:" +  + "\n\n");
+		
+		if (novo instanceof ClientePF) this.calcularPrecoSeguroCliente(((ClientePF) novo).getCpf());
+		else if (novo instanceof ClientePJ) this.calcularPrecoSeguroCliente(((ClientePJ) novo).getCnpj());
+		
 		return true;
 	}
 	
@@ -201,7 +205,9 @@ public class Seguradora {
 		if (cliente == null) return false;
 		
 		// Usamos o metodo booleano da classe Cliente para adicionar o novo veiculo ao cliente encontrado
-		return cliente.adicionarVeiculo(novo);
+		boolean res = cliente.adicionarVeiculo(novo);
+		this.calcularPrecoSeguroCliente(key);
+		return res;
 	}
 	
 	// Metodo que tenta remover um veiculo dado sua placa de um cliente dado sua chave, retorna true em sucesso
@@ -210,7 +216,9 @@ public class Seguradora {
 		Cliente cliente = acharCliente(key);
 		if (cliente == null) return false;
 		
-		return cliente.removerVeiculo(placa);
+		boolean res = cliente.removerVeiculo(placa);
+		this.calcularPrecoSeguroCliente(key);
+		return res;
 	}
 	
 	// Metodo para gerar um novo Sinistro dado suas informacoes nescessarias
@@ -226,6 +234,7 @@ public class Seguradora {
 		// Se ambos existem, criamos o novo sinstros e inserimos ele na lista da seguradora
 		Sinistro novo = new Sinistro(data, endereco, this, veiculo, cliente);
 		this.listaSinistros.add(novo);		
+		this.calcularPrecoSeguroCliente(key);
 		return true;
 	}
 	
@@ -243,6 +252,45 @@ public class Seguradora {
 	// Retorna a lista de sinistros da seguradora
 	public List<Sinistro> listarSinistros() {
 		return this.getListaSinistros();
+	}
+	
+	public double calcularPrecoSeguroCliente(String key) {
+		Cliente cliente = acharCliente(key);
+		if (cliente == null) return -1;
+		
+		int qtdSinistros = this.listaSinistros.size();
+		for (Sinistro sinistro: this.listaSinistros) {	
+			if (sinistro.getCliente() != cliente) qtdSinistros--;
+		}
+		
+		double valorSeguro = cliente.calcularScore() * (1 + qtdSinistros);
+		
+		cliente.setValorSeguro(valorSeguro);
+		return valorSeguro;
+	}
+	
+	public double calcularReceita() {
+		double receita = 0.0;
+		for (Cliente cliente: this.listaClientes) {
+			receita += cliente.getValorSeguro();
+		}
+		
+		return receita;
+	}
+	
+	public boolean transferirSeguro(String keyOriginal, String keyNovo) {
+		Cliente original = acharCliente(keyOriginal);
+		Cliente novo = acharCliente(keyNovo);
+		if (original == null || novo == null) return false;
+		
+		for (Veiculo v: original.getListaVeiculos()) {
+			original.removerVeiculo(v.getPlaca());
+			novo.adicionarVeiculo(v);
+		}
+		this.calcularPrecoSeguroCliente(keyOriginal);
+		this.calcularPrecoSeguroCliente(keyNovo);
+		
+		return true;
 	}
 	
 	// Este toString() formata os clientes da seguradora caso esta tenha algum, alem de seus outros atributos
