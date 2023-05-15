@@ -1,6 +1,7 @@
 package mc322;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import mc322.cliente.Cliente;
@@ -115,6 +116,69 @@ public class Main {
 		} while(subOp != SubmenuOperacoes.VOLTAR);
 	}
 	
+	private List<Seguradora> seguradoras = new ArrayList<Seguradora>();
+	
+	private int existeSeguradora(String key) {
+		for (int i = 0; i < seguradoras.size(); i++) {
+			if (seguradoras.get(i).getNome() == key) return i;
+		}
+		
+		return -1;
+	}
+	
+	private boolean cadastrarSeguradora() {
+		
+		
+		return false;
+	}
+	
+	private boolean cadastrarCliente() {
+		String seguradora = InputReader.lerString("Nome da seguradora: ");
+		int segId = existeSeguradora(seguradora);
+		if (segId < 0) {
+			System.out.println("Seguradora com tal nome nao encontrada. Tente acessar ")
+		}
+		
+		String nome = InputReader.lerNome();
+		
+		String endereco = InputReader.lerString("Endereco: ");
+		
+		LocalDate dataLicensa = LocalDate.now();
+	
+		String tipo = InputReader.lerTipoCliente();
+		
+		if (tipo.equals("PF")) {
+			String educacao = InputReader.lerString("Educacao: ");
+			
+			String genero = InputReader.lerString("Genero: ");
+			
+			String classeEconomica = InputReader.lerString("Classe Economica: ");
+			
+			String cpf = InputReader.lerCPF();
+;									
+			LocalDate dataNascimento = InputReader.lerData("Aniversario: [dd/mm/yyyy] ");
+		
+			ClientePF novoCliente = new ClientePF(nome, endereco, dataLicensa, educacao, genero, classeEconomica, cpf, dataNascimento);
+			if (seguradora.cadastrarCliente(novoCliente)) {
+				System.out.println("\nMENSAGEM: " + nome + " cadastrado com sucesso!\n");
+			} else {
+				System.out.println("\nMENSAGEM: Jah existe cliente com CPF " + cpf + ".\n");
+			}
+		} else {
+			String cnpj = InputReader.lerCNPJ();
+			
+			LocalDate dataFundacao = InputReader.lerData("Data de fundacao: [dd/mm/yyyy]");
+			
+			ClientePJ novoCliente = new ClientePJ(nome, endereco, dataLicensa, cnpj, dataFundacao);
+			if (seguradora.cadastrarCliente(novoCliente)) {
+				System.out.println("\nMENSAGEM: " + nome + " cadastrado com sucesso!\n");
+			} else {
+				System.out.println("\nMENSAGEM: Jah existe cliente com CNPJ " + cnpj + ".\n");
+			}
+		}
+	}
+	
+	// "rodarMenu()"
 	public static void main(String[] args) {
 		MenuOperacoes op;
 		do {
