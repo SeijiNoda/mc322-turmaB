@@ -7,13 +7,123 @@ import mc322.cliente.Cliente;
 import mc322.cliente.ClientePF;
 import mc322.cliente.ClientePJ;
 import mc322.leitor.InputReader;
+import mc322.menu.MenuOperacoes;
+import mc322.menu.SubmenuOperacoes;
 import mc322.seguradora.Seguradora;
 import mc322.sinistro.Sinistro;
 import mc322.veiculo.Veiculo;
 
 public class Main {
-
+	private static void exibirMenu() {
+		MenuOperacoes[] menu = MenuOperacoes.values();
+		System.out.println("Menu Principal: ");
+		
+		for (MenuOperacoes op: menu) {
+			System.out.println(op.getId() + " - " + op.getOperacao());
+		}
+	}
+	
+	private static void exibirSubmenu(MenuOperacoes op) {
+		SubmenuOperacoes[] submenu = op.getSubmenu();
+		System.out.println(op.getOperacao());
+		for (int i=0; i<submenu.length; i++) {
+			System.out.println(op.getId() + "." + (i+1) + " - " + submenu[i].getDescricao());
+		}
+	}
+	
+	private static MenuOperacoes lerOperacaoMenu() {
+		int opId = -1;
+		MenuOperacoes[] opArray = MenuOperacoes.values();
+		do {
+			exibirMenu();
+			System.out.println("Digite uma opcao: ");
+			opId = InputReader.lerInteiro();
+		} while (opId < 0 || opId > opArray.length - 1);
+		for (MenuOperacoes op: opArray) {
+			if (op.getId() == opId) return op;
+		}
+		
+		// nunca acontece
+		return null;
+	}
+	
+	private static SubmenuOperacoes lerOperacaoSubmenu(MenuOperacoes op) {
+		int opId = -1;
+		SubmenuOperacoes[] opArray = op.getSubmenu();
+		do {
+			exibirSubmenu(op);
+			System.out.println("Digite uma opcao: ");
+			opId = InputReader.lerInteiro();
+		} while (opId < 0 || opId > opArray.length - 1);
+		return opArray[opId];
+	}
+	
+	private static void executarOperacaoMenu(MenuOperacoes op) {
+		switch (op) {
+			case CADASTROS:
+			case LISTAR:
+			case EXCLUIR:
+				rodarSubmenu(op);
+				break;
+			case GERAR_SINISTRO:
+			case TRANSFERIR_SEGURO:
+			case CALCULAR_RECEITA:
+				break;
+		}
+	}
+	
+	private static void executarOperacaoSubmenu(SubmenuOperacoes op) {
+		switch(op) {
+		case CADASTRAR_CLIENTE:
+			System.out.println("Chamar metodo cadastrar cliente");
+			break;
+		case CADASTRAR_VEICULO:
+			System.out.println("Chamar metodo cadastrar veiculo");
+			break;
+		case CADASTRAR_SEGURADORA:
+			System.out.println("Chamar metodo cadastrar seguradora");
+			break;
+		case LISTAR_CLIENTES:
+			System.out.println("Chamar metodo listar clientes");
+			break;
+		case LISTAR_SINISTROS:
+			System.out.println("Chamar metodo listar sinistros");
+			break;
+		case LISTAR_VEICULOS:
+			System.out.println("Chamar metodo listar veiculos");
+			break;
+		case EXCLUIR_CLIENTE:
+			System.out.println("Chamar metodo excluir cliente");
+			break;
+		case EXCLUIR_VEICULO:
+			System.out.println("Chamar metodo excluir veiculo");
+			break;
+		case EXCLUIR_SINISTRO:
+			System.out.println("Chamar metodo excluir sinistro");
+			break;
+		//case VOLTAR:
+		//	break;
+		}
+	}
+	
+	private static void rodarSubmenu(MenuOperacoes op) {
+		SubmenuOperacoes subOp;
+		do {
+			exibirSubmenu(op);
+			subOp = lerOperacaoSubmenu(op);
+			executarOperacaoSubmenu(subOp);
+		} while(subOp != SubmenuOperacoes.VOLTAR);
+	}
+	
 	public static void main(String[] args) {
+		MenuOperacoes op;
+		do {
+			exibirMenu();
+			op = lerOperacaoMenu();
+			executarOperacaoMenu(op);
+		} while(op != MenuOperacoes.SAIR);
+		
+		
 		// Instanciamos alguns valores para o programa logo abaixo já possuir alguns objetos quando iniciar
 		
 		// Instanciar pelo menos 1 objeto da classe Seguradora
@@ -41,6 +151,12 @@ public class Main {
 		Veiculo veiculo2 = new Veiculo("ABC1D23", "Calloi", "Bicicleta do grau", 2000);
 		seguradora.adicionarVeiculo(veiculo2, cliente3.getCnpj());
 		//   System.out.println(cliente3.toString());
+		
+		
+		
+		
+		
+		
 		
 		
 		/*

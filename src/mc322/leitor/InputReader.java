@@ -4,15 +4,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import java.util.regex.Pattern;
-
-import mc322.validacao.Validacao;
-
 import java.util.regex.Matcher;
 
 // Classe par ler inputs do usuario
 public class InputReader {
 	// Objeto que a classe usara para ler do teclado
 	private static Scanner reader = new Scanner(System.in);
+	
+	public static int lerInteiro() {
+		return reader.nextInt();
+	}
 	
 	// Metodo que le a proxima String do teclado
 	public static String lerString() {
