@@ -14,6 +14,13 @@ public final class Validacao {
 		return nome.equals("") ? false : nome.replaceAll("[A-Za-z ]", "").trim().length() == 0;
 	}
 	
+	public static boolean validarEmail(String email) {
+		Pattern padraoEmail = Pattern.compile("^(.+)@(.+)$");
+		
+		Matcher matcher = padraoEmail.matcher(email);
+		return matcher.matches();
+	}
+	
 	public static boolean validarCPF(String cpf) {
 		// Regex que valida os formatos possiveis para o CPF
 		Pattern padraoCpf = Pattern.compile("[0-9]{3}[\\.]?[0-9]{3}[\\.]?[0-9]{3}[-]?[0-9]{2}");

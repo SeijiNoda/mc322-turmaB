@@ -2,8 +2,12 @@ package mc322.leitor;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+
+import mc322.seguradora.Seguradora;
+
 import java.util.regex.Matcher;
 
 // Classe par ler inputs do usuario
@@ -26,13 +30,24 @@ public class InputReader {
 		System.out.print(msg);
 		return reader.nextLine();
 	}
-	
+
 	// Metodo que le a proxima String do teclado e valida se ela possui apenas letras para o nome
 	public static String lerNome() {
 		String ret = "";
 		
 		while(!Validacao.validarNome(ret)) {
 			System.out.print("Nome: ");
+			ret = reader.nextLine();
+		}
+		
+		return ret;
+	}
+	
+	public static String lerEmail() {
+		String ret = "";
+		
+		while(!Validacao.validarEmail(ret)) {
+			System.out.print("Email: ");
 			ret = reader.nextLine();
 		}
 		

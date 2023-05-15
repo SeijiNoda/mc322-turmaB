@@ -3,6 +3,7 @@ package mc322;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import mc322.cliente.Cliente;
 import mc322.cliente.ClientePF;
@@ -75,23 +76,43 @@ public class Main {
 	
 	private static void executarOperacaoSubmenu(SubmenuOperacoes op) {
 		switch(op) {
+		case VOLTAR:
+			break;
 		case CADASTRAR_CLIENTE:
-			System.out.println("Chamar metodo cadastrar cliente");
+			cadastrarCliente();
 			break;
 		case CADASTRAR_VEICULO:
-			System.out.println("Chamar metodo cadastrar veiculo");
+			cadastrarVeiculo();
 			break;
 		case CADASTRAR_SEGURADORA:
-			System.out.println("Chamar metodo cadastrar seguradora");
+			cadastrarSeguradora();
 			break;
 		case LISTAR_CLIENTES:
-			System.out.println("Chamar metodo listar clientes");
+			listarClientes();
 			break;
-		case LISTAR_SINISTROS:
-			System.out.println("Chamar metodo listar sinistros");
+		case LISTAR_SINISTROS_SEGURADORA:
+			listarSinistros();
 			break;
-		case LISTAR_VEICULOS:
-			System.out.println("Chamar metodo listar veiculos");
+		case LISTAR_SINISTROS_CLIENTE:
+			String key = "";
+			String tipo = InputReader.lerTipoCliente();
+			
+			if (tipo.equals("PF")) key = InputReader.lerCPF();
+			else key = InputReader.lerCNPJ();
+		
+			listarSinistros(key);
+			break;
+		case LISTAR_VEICULOS_SEGURADORA:
+			listarVeiculos();
+			break;
+		case LISTAR_VEICULOS_CLIENTE:
+			String key = "";
+			String tipo = InputReader.lerTipoCliente();
+			
+			if (tipo.equals("PF")) key = InputReader.lerCPF();
+			else key = InputReader.lerCNPJ();
+		
+			listarVeiculos(key);
 			break;
 		case EXCLUIR_CLIENTE:
 			System.out.println("Chamar metodo excluir cliente");
@@ -102,8 +123,6 @@ public class Main {
 		case EXCLUIR_SINISTRO:
 			System.out.println("Chamar metodo excluir sinistro");
 			break;
-		//case VOLTAR:
-		//	break;
 		}
 	}
 	
@@ -116,9 +135,9 @@ public class Main {
 		} while(subOp != SubmenuOperacoes.VOLTAR);
 	}
 	
-	private List<Seguradora> seguradoras = new ArrayList<Seguradora>();
+	private static List<Seguradora> seguradoras = new ArrayList<Seguradora>();
 	
-	private int existeSeguradora(String key) {
+	private static int existeSeguradora(String key) {
 		for (int i = 0; i < seguradoras.size(); i++) {
 			if (seguradoras.get(i).getNome() == key) return i;
 		}
@@ -126,18 +145,18 @@ public class Main {
 		return -1;
 	}
 	
-	private boolean cadastrarSeguradora() {
-		
-		
-		return false;
-	}
-	
-	private boolean cadastrarCliente() {
-		String seguradora = InputReader.lerString("Nome da seguradora: ");
-		int segId = existeSeguradora(seguradora);
-		if (segId < 0) {
-			System.out.println("Seguradora com tal nome nao encontrada. Tente acessar ")
+	private static boolean cadastrarCliente() {
+		if (seguradoras.get(0) == null) {
+			System.out.println("Nenhuma seguradora no sistema! Cadastre alguma para continuar.");
+			return false;
 		}
+		String seguradoraStr = InputReader.lerString("Nome da seguradora: ");
+		int segId = existeSeguradora(seguradoraStr);
+		while (segId < 0) {
+			seguradoraStr = InputReader.lerString("Nome da seguradora: ");
+			segId = existeSeguradora(seguradoraStr);
+		}
+		Seguradora seguradora = seguradoras.get(segId);
 		
 		String nome = InputReader.lerNome();
 		
@@ -161,8 +180,10 @@ public class Main {
 			ClientePF novoCliente = new ClientePF(nome, endereco, dataLicensa, educacao, genero, classeEconomica, cpf, dataNascimento);
 			if (seguradora.cadastrarCliente(novoCliente)) {
 				System.out.println("\nMENSAGEM: " + nome + " cadastrado com sucesso!\n");
+				return true;
 			} else {
 				System.out.println("\nMENSAGEM: Jah existe cliente com CPF " + cpf + ".\n");
+				return false;
 			}
 		} else {
 			String cnpj = InputReader.lerCNPJ();
@@ -172,8 +193,160 @@ public class Main {
 			ClientePJ novoCliente = new ClientePJ(nome, endereco, dataLicensa, cnpj, dataFundacao);
 			if (seguradora.cadastrarCliente(novoCliente)) {
 				System.out.println("\nMENSAGEM: " + nome + " cadastrado com sucesso!\n");
+				return true;
 			} else {
 				System.out.println("\nMENSAGEM: Jah existe cliente com CNPJ " + cnpj + ".\n");
+				return false;
+			}
+		}
+	}
+	
+	private static boolean cadastrarVeiculo() {
+		if (seguradoras.get(0) == null) {
+			System.out.println("Nenhuma seguradora no sistema! Cadastre alguma para continuar.");
+			return false;
+		}
+		String seguradoraStr = InputReader.lerString("Nome da seguradora: ");
+		int segId = existeSeguradora(seguradoraStr);
+		while (segId < 0) {
+			seguradoraStr = InputReader.lerString("Nome da seguradora: ");
+			segId = existeSeguradora(seguradoraStr);
+		}
+		Seguradora seguradora = seguradoras.get(segId);
+		
+		String tipo = InputReader.lerTipoCliente();
+		
+		String key = "";
+		if (tipo.equals("PF")) 
+			key = InputReader.lerCPF("CPF do cliente ao qual adicionar: ");
+		 else 
+			key = InputReader.lerCNPJ("CNPJ do cliente ao qual adicionar: ");
+		
+		String placa = InputReader.lerPlaca();
+		
+		String marca = InputReader.lerString("Marca: ");
+		
+		String modelo = InputReader.lerString("Modelo: ");
+		
+		int anoFabricacao = Integer.parseInt(InputReader.lerString("Ano de fabricacao: "));
+		
+		Veiculo novo = new Veiculo(placa, marca, modelo, anoFabricacao);
+		
+		// Verificamos o resultado do metodo de adicionar e informamos o usuario de acordo
+		if (seguradora.adicionarVeiculo(novo, key)) {
+			System.out.println("\nMENSAGEM: Veiculo novo adicionado com sucesso!\n");
+			return true;
+		} else {
+			System.out.println("\nMENSAGEM: Cliente jah possue veiculo com placa: " + placa +".\n");
+			return false;
+		}
+	}
+	
+	private static void cadastrarSeguradora() {
+		String nome = InputReader.lerString("Nome da seguradora: ");
+		int segId = existeSeguradora(nome);
+		while (segId >= 0) {
+			nome = InputReader.lerString("Nome da seguradora: ");
+			segId = existeSeguradora(nome);
+		}
+		
+		String telefone = InputReader.lerString("Telefone: ");
+		
+		String email = InputReader.lerEmail();
+		
+		String endereco = InputReader.lerString("Endereco: ");
+		
+		Seguradora seguradora = new Seguradora(nome, telefone, email, endereco);
+		seguradoras.add(seguradora);
+	}
+	
+	private static void listarClientes() {
+		if (seguradoras.get(0) == null) System.out.println("Nenhuma seguradora no sistema! Cadastre alguma para continuar.");
+		for (Seguradora seguradora: seguradoras) {
+			System.out.println("\n" + seguradora.getNome().toUpperCase() + ":");
+			String tipo = InputReader.lerTipoCliente();
+			
+			List<Cliente> lista = seguradora.listarClientes(tipo);
+			if (lista.size() == 0) {
+				System.out.println("\nMENSAGEM: Lista de clientes vazia!\n");
+			} else {
+				for (Cliente cliente: lista) {
+					System.out.println(cliente.toString() + "\n");
+				}
+			}
+		}
+	}
+	
+	private static void listarSinistros() {
+		if (seguradoras.get(0) == null) System.out.println("Nenhuma seguradora no sistema! Cadastre alguma para continuar.");
+		for (Seguradora seguradora: seguradoras) {
+			System.out.println("\n" + seguradora.getNome().toUpperCase() + ":");
+
+			List<Sinistro> lista = seguradora.listarSinistros();
+			if (lista.size() == 0) {
+				System.out.println("\nMENSAGEM: Lista de sinistros vazia!\n");
+			} else {
+				for (Sinistro sinistro: lista) {
+					System.out.println(sinistro.toString() + "\n");
+				}
+			}
+		}
+	}
+	
+	private static void listarSinistros(String key) {
+		if (seguradoras.get(0) == null) System.out.println("Nenhuma seguradora no sistema! Cadastre alguma para continuar.");
+		
+		for (Seguradora seguradora: seguradoras) {
+			System.out.println("\n" + seguradora.getNome().toUpperCase() + ":");
+
+			List<Sinistro> lista = seguradora.listarSinistros(key);
+			if (lista == null) continue;
+			if (lista.size() == 0) {
+				System.out.println("\nMENSAGEM: Lista de sinistros vazia!\n");
+			} else {
+				for (Sinistro sinistro: lista) {
+					System.out.println(sinistro.toString() + "\n");
+				}
+			}
+		}
+	}
+	
+	private static void listarVeiculos() {
+		if (seguradoras.get(0) == null) System.out.println("Nenhuma seguradora no sistema! Cadastre alguma para continuar.");
+		
+		for (Seguradora seguradora: seguradoras) {
+			System.out.println("\n" + seguradora.getNome().toUpperCase() + ":");
+
+			List<Cliente> lista = seguradora.getListaClientes();
+			if (lista.size() == 0) {
+				System.out.println("\nMENSAGEM: Lista de clientes vazia!\n");
+			} else {
+				for (Cliente cliente: lista) {
+					System.out.println("\n" + cliente.getNome().toUpperCase() + ":");
+					for (Veiculo veiculo: cliente.getListaVeiculos()) {
+						System.out.println(veiculo.toString() + "\n");
+					}
+				}
+			}
+		}
+	}
+	
+	private static void listarVeiculos(String key) {
+		if (seguradoras.get(0) == null) System.out.println("Nenhuma seguradora no sistema! Cadastre alguma para continuar.");
+		
+		for (Seguradora seguradora: seguradoras) {
+			System.out.println("\n" + seguradora.getNome().toUpperCase() + ":");
+
+			List<Cliente> lista = seguradora.getListaClientes();
+			if (lista.size() == 0) {
+				System.out.println("\nMENSAGEM: Lista de clientes vazia!\n");
+			} else {
+				for (Cliente cliente: lista) {
+					System.out.println("\n" + cliente.getNome().toUpperCase() + ":");
+					for (Veiculo veiculo: cliente.getListaVeiculos()) {
+						System.out.println(veiculo.toString() + "\n");
+					}
+				}
 			}
 		}
 	}

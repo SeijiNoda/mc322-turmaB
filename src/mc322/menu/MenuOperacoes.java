@@ -9,8 +9,10 @@ public enum MenuOperacoes {
 	}),
 	LISTAR(2, "Listar", new SubmenuOperacoes[] {
 			SubmenuOperacoes.LISTAR_CLIENTES,
-			SubmenuOperacoes.LISTAR_VEICULOS,
-			SubmenuOperacoes.LISTAR_SINISTROS,
+			SubmenuOperacoes.LISTAR_SINISTROS_SEGURADORA,
+			SubmenuOperacoes.LISTAR_SINISTROS_CLIENTE,
+			SubmenuOperacoes.LISTAR_VEICULOS_CLIENTE,
+			SubmenuOperacoes.LISTAR_VEICULOS_SEGURADORA,
 			SubmenuOperacoes.VOLTAR
 	}),
 	EXCLUIR(3, "Excluir", new SubmenuOperacoes[] {

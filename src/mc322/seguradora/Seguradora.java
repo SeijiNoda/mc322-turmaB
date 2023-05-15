@@ -254,6 +254,19 @@ public class Seguradora {
 		return this.getListaSinistros();
 	}
 	
+	public List<Sinistro> listarSinistros(String key) {
+		Cliente cliente = acharCliente(key);
+		if (cliente == null) return null;
+		
+		List<Sinistro> ret = new ArrayList<Sinistro>();
+		
+		for (Sinistro sinistro: this.listaSinistros) {
+			if (sinistro.getCliente() != cliente) ret.add(sinistro);
+		}
+		
+		return ret;
+	}
+	
 	public double calcularPrecoSeguroCliente(String key) {
 		Cliente cliente = acharCliente(key);
 		if (cliente == null) return -1;
