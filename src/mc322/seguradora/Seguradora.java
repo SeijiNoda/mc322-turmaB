@@ -318,7 +318,9 @@ public class Seguradora {
 		Cliente novo = acharCliente(keyNovo);
 		if (original == null || novo == null) return false;
 		
-		for (Veiculo v: original.getListaVeiculos()) {
+		List<Veiculo> lista = original.getListaVeiculos();
+		for (int i = 0; i < lista.size(); i++) {
+			Veiculo v = lista.get(i);
 			original.removerVeiculo(v.getPlaca());
 			novo.adicionarVeiculo(v);
 		}

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.time.LocalDate;
 import mc322.veiculo.Veiculo;
 
-public class Cliente {
+public abstract class Cliente {
 	private String nome;
 	private String endereco;
 	private List<Veiculo> listaVeiculos;
@@ -86,9 +86,7 @@ public class Cliente {
 		return false;
 	}
 	
-	public double calcularScore() {
-		return 0.0;
-	}
+	public abstract double calcularScore();
 	
 	public String toString() {
 		// usamos String.format() para concatenar a string de retorno
