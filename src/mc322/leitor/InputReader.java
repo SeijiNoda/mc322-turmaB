@@ -19,6 +19,11 @@ public class InputReader {
 		return reader.nextInt();
 	}
 	
+	public static int lerInteiro(String msg) {
+		System.out.print(msg);
+		return reader.nextInt();
+	}
+	
 	// Metodo que le a proxima String do teclado
 	public static String lerString() {
 		return reader.nextLine();

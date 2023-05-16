@@ -238,6 +238,16 @@ public class Seguradora {
 		return true;
 	}
 	
+	public boolean removerSinistro(int id) {
+		for (Sinistro sinistro: this.listaSinistros) {
+			if (sinistro.getId() == id) {
+				this.listaSinistros.remove(sinistro);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	// Metodo que avalia se existe um sinistro para o cliente com CPF/CNPJ de key
 	public boolean vizualizarSinistro(String key) {
 		Cliente cliente = acharCliente(key);		
@@ -265,6 +275,18 @@ public class Seguradora {
 		}
 		
 		return ret;
+	}
+	
+	public List<Veiculo> listarVeiculos() {
+		List<Veiculo> lista = new ArrayList<Veiculo>();
+		for (Cliente cliente: this.listaClientes) {
+			lista.addAll(cliente.getListaVeiculos());
+		}
+		return lista;
+	}
+	
+	public List<Veiculo> listarVeiculos(String key) {
+		return acharCliente(key).getListaVeiculos();
 	}
 	
 	public double calcularPrecoSeguroCliente(String key) {
