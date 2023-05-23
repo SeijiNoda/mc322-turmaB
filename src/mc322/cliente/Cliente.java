@@ -1,29 +1,19 @@
 package mc322.cliente;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.time.LocalDate;
-import mc322.veiculo.Veiculo;
-
 public abstract class Cliente {
 	private String nome;
+	private String telefone;
 	private String endereco;
-	private List<Veiculo> listaVeiculos;
-	private double valorSeguro;
+	private String email;
 	
-	public Cliente(String nome, String endereco, List<Veiculo> listaVeiculos) {
+	public Cliente(String nome, String telefone, String endereco, String email) {
+		super();
 		this.nome = nome;
+		this.telefone = telefone;
 		this.endereco = endereco;
-		this.listaVeiculos = listaVeiculos;
-		this.valorSeguro = 0;
+		this.email = email;
 	}
-	
-	public Cliente(String nome, String endereco, LocalDate dataLicensa) {
-		this.nome = nome;
-		this.endereco = endereco;
-		this.listaVeiculos = new ArrayList<Veiculo>();
-	}
-	
+
 	public String getNome() {
 		return nome;
 	}
@@ -39,58 +29,22 @@ public abstract class Cliente {
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
 	}
-
-	public List<Veiculo> getListaVeiculos() {
-		return listaVeiculos;
-	}
-
-	public void setListaVeiculos(List<Veiculo> listaVeiculos) {
-		this.listaVeiculos = listaVeiculos;
-	}
-	
-	public int getQtdVeiculos() {
-		return listaVeiculos.size();
-	}
-	
-	public double getValorSeguro() {
-		return this.valorSeguro;
-	}
-	
-	public void setValorSeguro(double valor) {
-		this.valorSeguro = valor;
-	}
  	
-	// Metodo boolean para adicionar um novo veiculo na lista de veiculos do cliente
-	public boolean adicionarVeiculo(Veiculo novo) {
-		// Percorre a lista de veiculos para ver se a placa do novo veiculo nao eh repetida
-		for (Veiculo veiculo: this.listaVeiculos) {
-			if (veiculo.getPlaca().equals(novo.getPlaca())) return false;
-		}
-		
-		// Se nao for, adiciona o novo veiculo a lisa
-		this.listaVeiculos.add(novo);
-		return true;
+	public String getTelefone() {
+		return telefone;
 	}
-	
-	// Metodo boolean para remover um veiculo dado sua placa
-	public boolean removerVeiculo(String placa) {
-		// Percorremos a lista de veiculos ateh achar um veiculo com a placa desejada, e entao o removemos
-		for (Veiculo veiculo: this.listaVeiculos) {
-			if (veiculo.getPlaca().equals(placa)) {
-				this.listaVeiculos.remove(veiculo);
-				return true;
-			}
-		}
-		
-		// Senao encontrarmos, retornamos false
-		return false;
+
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
 	}
-	
-	public abstract double calcularScore();
-	
-	public String toString() {
-		// usamos String.format() para concatenar a string de retorno
-		return String.format("Nome: %s\nEndereco: %s\nSeguro: R$%s", 
-							 this.getNome(), this.getEndereco(), this.getValorSeguro());
+
+	public String getEmail() {
+		return email;
 	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public abstract String toString();
 }

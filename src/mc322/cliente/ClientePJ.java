@@ -1,27 +1,21 @@
 package mc322.cliente;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-import mc322.seguradora.CalcSeguro;
-import mc322.veiculo.Veiculo;
+import mc322.frota.Frota;
 
 public class ClientePJ extends Cliente{
 	private final String cnpj;
 	private LocalDate dataFundacao;
-	private int qtdFuncionarios;
+	private List<Frota> listaFrotas;
 	
-	public ClientePJ(String nome, String endereco, String cnpj, LocalDate dataFundacao, List<Veiculo> listaVeiculos, int qtdFuncionarios) {
-		super(nome, endereco, listaVeiculos);
+	public ClientePJ(String nome, String telefone, String endereco, String email, String cnpj, LocalDate dataFundacao) {
+		super(nome, telefone, endereco, email);
 		this.cnpj = cnpj;
 		this.dataFundacao = dataFundacao;
-		this.qtdFuncionarios = qtdFuncionarios;
-	}
-	
-	public ClientePJ(String nome, String endereco, LocalDate dataLicensa, String cnpj, LocalDate dataFundacao) {
-		super(nome, endereco, dataLicensa);
-		this.cnpj = cnpj;
-		this.dataFundacao = dataFundacao;
+		this.listaFrotas = new ArrayList<Frota>();
 	}
 
 	public LocalDate getDataFundacao() {
@@ -36,6 +30,14 @@ public class ClientePJ extends Cliente{
 		return cnpj;
 	}
 	
+	public List<Frota> getListaFrotas() {
+		return listaFrotas;
+	}
+
+	public void setListaFrotas(List<Frota> listaFrotas) {
+		this.listaFrotas = listaFrotas;
+	}
+
 	public static boolean validarCNPJ(String cnpj) {
 		// removemos todos os caracteres nao numericos com o regex
 		cnpj = cnpj.replaceAll("[^0-9 ]", "");
@@ -99,30 +101,16 @@ public class ClientePJ extends Cliente{
 		return 11 - resto;
 	}
 	
-	public int getQtdFuncionarios() {
-		return this.qtdFuncionarios;
-	}
-	
-	public void setQtdFuncionarios(int novaQtd) {
-		this.qtdFuncionarios = novaQtd;
-	}
-	
-	public double calcularScore() {
-		int qtdVeiculos = this.getQtdVeiculos();
-		int qtdFuncs = this.getQtdFuncionarios();
-		
-		return CalcSeguro.VALOR_BASE.getValor() * (1 + (qtdFuncs/100)) * qtdVeiculos;
-	}
 	
 	@Override
 	public String toString() {
-		String ret = String.format("Nome: %s\nCNPJ: %s\nFundacao: %s\nValor seguro: R$%s", this.getNome(), this.getCnpj(), this.getDataFundacao().toString(), this.getValorSeguro());
+		String ret = String.format("Nome: %s\nCNPJ: %s\nFundacao: %s", this.getNome(), this.getCnpj(), this.getDataFundacao().toString());
 		
-		int nmrVeiculos = this.getListaVeiculos().size();
+		int nmrVeiculos = this.listaFrotas.size();
 		if (nmrVeiculos > 0) {
-			ret += "\nVeiculos: [\n";
-			for (Veiculo veiculo: this.getListaVeiculos()) {
-				ret += veiculo.toString();
+			ret += "\nFrota: [\n";
+			for (Frota frota: this.listaFrotas) {
+				ret += frota.toString();
 				if (--nmrVeiculos > 0) {
 					ret += ",\n";
 				} else ret += "\n";

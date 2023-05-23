@@ -2,6 +2,7 @@ package mc322.cliente;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 
 import mc322.seguradora.CalcSeguro;
@@ -12,28 +13,18 @@ public class ClientePF extends Cliente{
 	private LocalDate dataNascimento;
 	private String educacao;
 	private String genero;
-	private String classeEconomica;
-	private LocalDate dataLicensa;
+	private List<Veiculo> listaVeiculos;
 	
-	public ClientePF(String nome, String endereco, LocalDate dataLicensa, String educacao, String genero, String classeEconomica, String cpf, LocalDate dataNascimento, List<Veiculo> listaVeiculos) {
-		super(nome, endereco, listaVeiculos);
+	public ClientePF(String nome, String telefone, String endereco, String email, String cpf, LocalDate dataNascimento,
+			String educacao, String genero) {
+		super(nome, telefone, endereco, email);
 		this.cpf = cpf;
 		this.dataNascimento = dataNascimento;
 		this.educacao = educacao;
 		this.genero = genero;
-		this.classeEconomica = classeEconomica;
-		this.dataLicensa = dataLicensa;
+		this.listaVeiculos = new ArrayList<Veiculo>();
 	}
-	
-	public ClientePF(String nome, String endereco, LocalDate dataLicensa, String educacao, String genero, String classeEconomica, String cpf, LocalDate dataNascimento) {
-		super(nome, endereco, dataLicensa);
-		this.cpf = cpf;
-		this.dataNascimento = dataNascimento;
-		this.educacao = educacao;
-		this.genero = genero;
-		this.classeEconomica = classeEconomica;
-	}
-	
+
 	public String getCpf() {
 		return cpf;
 	}
@@ -61,23 +52,15 @@ public class ClientePF extends Cliente{
 	public void setGenero(String genero) {
 		this.genero = genero;
 	}
-
-	public String getClasseEconomica() {
-		return classeEconomica;
-	}
-
-	public void setClasseEconomica(String classeEconomica) {
-		this.classeEconomica = classeEconomica;
-	}
 	
-	public LocalDate getDataLicensa() {
-		return dataLicensa;
+	public List<Veiculo> getListaVeiculos() {
+		return listaVeiculos;
 	}
 
-	public void setDataLicensa(LocalDate dataLicensa) {
-		this.dataLicensa = dataLicensa;
+	public void setListaVeiculos(List<Veiculo> listaVeiculos) {
+		this.listaVeiculos = listaVeiculos;
 	}
-	
+
 	public static boolean validarCPF(String cpf) {
 		// removemos todos os caracteres nao numericos com o regex
 		cpf = cpf.replaceAll("[^0-9 ]", "");
@@ -127,29 +110,39 @@ public class ClientePF extends Cliente{
 		return 11 - resto;
 	}
 	
-	public double calcularScore() {
-		int qtdVeiculos = this.getQtdVeiculos();
-		int idade = calcularIdade();
-		double FATOR_IDADE;
-		
-		if (idade >= 60) {
-			FATOR_IDADE = CalcSeguro.FATOR_60_90.getValor();
-		} else if (idade >= 30) {
-			FATOR_IDADE = CalcSeguro.FATOR_30_60.getValor();
-		} else {
-			FATOR_IDADE = CalcSeguro.FATOR_18_30.getValor();
+	// Metodo boolean para adicionar um novo veiculo na lista de veiculos do cliente
+	public boolean cadastrarVeiculo(Veiculo novo) {
+		// Percorre a lista de veiculos para ver se a placa do novo veiculo nao eh repetida
+		for (Veiculo veiculo: this.listaVeiculos) {
+			if (veiculo.getPlaca().equals(novo.getPlaca())) return false;
 		}
 		
-		return CalcSeguro.VALOR_BASE.getValor() * FATOR_IDADE * qtdVeiculos;
+		// Se nao for, adiciona o novo veiculo a lisa
+		this.listaVeiculos.add(novo);
+		return true;
+	}
+		
+	// Metodo boolean para remover um veiculo dado sua placa
+	public boolean removerVeiculo(String placa) {
+		// Percorremos a lista de veiculos ateh achar um veiculo com a placa desejada, e entao o removemos
+		for (Veiculo veiculo: this.listaVeiculos) {
+			if (veiculo.getPlaca().equals(placa)) {
+				this.listaVeiculos.remove(veiculo);
+				return true;
+			}
+		}
+		
+		// Senao encontrarmos, retornamos false
+		return false;
 	}
 	
-	private int calcularIdade() {
+	public int getIdade() {
 		return Period.between(this.dataNascimento, LocalDate.now()).getYears();
 	}
 	
 	@Override
 	public String toString() {
-		String ret = String.format("Nome: %s\nCPF: %s\nAniversario: %s\nValor seguro: R$%s", this.getNome(), this.getCpf(), this.getDataNascimento().toString(), this.getValorSeguro());
+		String ret = String.format("Nome: %s\nCPF: %s\nAniversario: %s", this.getNome(), this.getCpf(), this.getDataNascimento().toString());
 		
 		int nmrVeiculos = this.getListaVeiculos().size();
 		if (nmrVeiculos > 0) {
