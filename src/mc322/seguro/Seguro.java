@@ -86,9 +86,9 @@ public abstract class Seguro {
 		this.valorMensal = valorMensal;
 	}
 	
-	public abstract boolean desautorizarCondutor();
+	public abstract boolean desautorizarCondutor(String key);
 	
-	public abstract boolean autorizarCondutor();
+	public abstract boolean autorizarCondutor(Condutor condutor);
 	
 	public abstract void gerarSinistro();
 	

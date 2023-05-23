@@ -3,26 +3,23 @@ package mc322.sinistro;
 import java.time.LocalDate;
 import java.util.Random;
 
-import mc322.seguradora.Seguradora;
-import mc322.veiculo.Veiculo;
-import mc322.cliente.Cliente;
+import mc322.condutor.Condutor;
+import mc322.seguro.Seguro;
 
 public class Sinistro {
 	private static int cont = 0;
 	private final int id;
 	private LocalDate data;
 	private String endereco;
-	private Seguradora seguradora;
-	private Veiculo veiculo;
-	private Cliente cliente;
+	private Condutor condutor;
+	private Seguro seguro;
 	
-	public Sinistro(LocalDate data, String endereco, Seguradora seguradora, Veiculo veiculo, Cliente cliente) {
+	public Sinistro(LocalDate data, String endereco, Condutor condutor, Seguro seguro) {
 		this.id = ++cont;
 		this.data = data;
 		this.endereco = endereco;
-		this.seguradora = seguradora;
-		this.cliente = cliente;
-		this.veiculo = veiculo;
+		this.condutor = condutor;
+		this.seguro = seguro;
 	}
 	
 	public int getId() {
@@ -45,28 +42,20 @@ public class Sinistro {
 		this.endereco = endereco;
 	}
 	
-	public Seguradora getSeguradora() {
-		return seguradora;
+	public Seguro getSeguro() {
+		return seguro;
 	}
 
-	public void setSeguradora(Seguradora seguradora) {
-		this.seguradora = seguradora;
+	public void setSeguro(Seguro seguro) {
+		this.seguro = seguro;
+	}
+	
+	public Condutor getCondutor() {
+		return condutor;
 	}
 
-	public Veiculo getVeiculo() {
-		return veiculo;
-	}
-
-	public void setVeiculo(Veiculo veiculo) {
-		this.veiculo = veiculo;
-	}
-
-	public Cliente getCliente() {
-		return cliente;
-	}
-
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
+	public void setCondutor(Condutor condutor) {
+		this.condutor = condutor;
 	}
 
 	private int gerarIdAleatorio() {
@@ -84,6 +73,6 @@ public class Sinistro {
 	}
 	
 	public String toString() {
-		return String.format("Sinistro de ID: %d de %s ocorrido em %s.", this.getId(), this.getCliente().getNome(), this.getData());
+		return String.format("Sinistro de ID: %d ocorrido em %s.", this.getId(), this.getData());
 	}
 }

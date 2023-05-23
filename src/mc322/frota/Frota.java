@@ -10,7 +10,6 @@ public class Frota {
 	private List<Veiculo> listaVeiculos;
 	
 	public Frota(String id) {
-		super();
 		this.id = id;
 		this.listaVeiculos = new ArrayList<Veiculo>();
 	}

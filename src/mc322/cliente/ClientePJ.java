@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mc322.frota.Frota;
+import mc322.veiculo.Veiculo;
 
 public class ClientePJ extends Cliente{
 	private final String cnpj;
@@ -101,9 +102,53 @@ public class ClientePJ extends Cliente{
 		return 11 - resto;
 	}
 	
+	public boolean cadastrarFrota(String key) {
+		for (Frota frota: this.listaFrotas) {
+			if (frota.getId().equals(key)) return false;
+		}
+		this.listaFrotas.add(new Frota(key));
+		return true;
+	}
+	
+	public boolean atualizarFrota(String key) {
+		for (Frota frota: this.listaFrotas) {
+			if (frota.getId().equals(key)) {
+				this.listaFrotas.remove(frota);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean atualizarFrota(String key, Veiculo v) {
+		for (Frota frota: this.listaFrotas) {
+			if (frota.getId().equals(key)) {
+				for (Veiculo vAtual: frota.getListaVeiculos()) {
+					if (vAtual.getPlaca().equals(v.getPlaca())) {
+						frota.removerVeiculo(v.getPlaca());
+						return true;
+					}
+				}
+				frota.adicionarVeiculos(v);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public List<Veiculo> getVeiculosPorFrota(String key) {
+		List<Veiculo> ret = null;
+		for (Frota frota: this.listaFrotas) {
+			if (frota.getId().equals(key)) {
+				ret = frota.getListaVeiculos();
+				break;
+			}
+		}
+		return ret;
+	}
 	
 	@Override
-	public String toString() {
+ 	public String toString() {
 		String ret = String.format("Nome: %s\nCNPJ: %s\nFundacao: %s", this.getNome(), this.getCnpj(), this.getDataFundacao().toString());
 		
 		int nmrVeiculos = this.listaFrotas.size();
