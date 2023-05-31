@@ -86,9 +86,23 @@ public abstract class Seguro {
 		this.valorMensal = valorMensal;
 	}
 	
-	public abstract boolean desautorizarCondutor(String key);
+	public boolean desautorizarCondutor(String key) {
+		for (Condutor condutor: this.getListaCondutores()) {
+			if (condutor.getCpf().equals(key)) {
+				this.getListaCondutores().remove(condutor);
+				return true;
+			}
+		}
+		return false;
+	}
 	
-	public abstract boolean autorizarCondutor(Condutor condutor);
+	public boolean autorizarCondutor(Condutor novo) {
+		for (Condutor condutor: this.getListaCondutores()) {
+			if (condutor.getCpf().equals(novo.getCpf())) return false;
+		}
+		this.getListaCondutores().add(novo);
+		return true;
+	}
 	
 	public abstract void gerarSinistro();
 	

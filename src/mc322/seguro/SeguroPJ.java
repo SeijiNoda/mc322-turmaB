@@ -3,10 +3,13 @@ package mc322.seguro;
 import java.time.LocalDate;
 
 import mc322.cliente.ClientePJ;
+import mc322.condutor.Condutor;
 import mc322.seguradora.Seguradora;
 import mc322.frota.Frota;
 
 public class SeguroPJ extends Seguro {
+	private static final int VALOR_BASE = 10;
+		
 	private Frota frota;
 	private ClientePJ cliente;
 		
@@ -33,19 +36,17 @@ public class SeguroPJ extends Seguro {
 		this.cliente = cliente;
 	}
 	
-	public boolean autorizarCondutor() {
-		return false;
-	}
-	
-	public boolean desautorizarCondutor() {
-		return false;
-	}
-	
 	public void gerarSinistro() {
 	}
 	
 	public double calcularValor() {
-		return -1;
+		int qtdFuncionarios = this.cliente.getQtdFuncionarios();
+		int qtdVeiculos = this.frota.getListaVeiculos().size();
+		int anoFundacao = this.cliente.getDataFundacao()
+		
+		return (VALOR_BASE * (10 + (qtdFuncionarios/10)) * 
+							 (1 + 1/(qtdVeiculos+2)) *
+							 (1 + 1/()));
 	}
 	
 	public String toString() {
