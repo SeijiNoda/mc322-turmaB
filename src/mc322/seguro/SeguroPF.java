@@ -16,9 +16,8 @@ public class SeguroPF extends Seguro {
 	private Veiculo veiculo;
 	private ClientePF cliente;
 		
-	public SeguroPF(int id, LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora, double valorMensal,
-			Veiculo veiculo, ClientePF cliente) {
-		super(id, dataInicio, dataFim, seguradora, valorMensal);
+	public SeguroPF(LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora, Veiculo veiculo, ClientePF cliente) {
+		super(dataInicio, dataFim, seguradora);
 		this.veiculo = veiculo;
 		this.cliente = cliente;
 	}

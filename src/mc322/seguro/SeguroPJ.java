@@ -1,6 +1,7 @@
 package mc322.seguro;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 import mc322.cliente.ClientePJ;
 import mc322.condutor.Condutor;
@@ -13,9 +14,8 @@ public class SeguroPJ extends Seguro {
 	private Frota frota;
 	private ClientePJ cliente;
 		
-	public SeguroPJ(int id, LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora, double valorMensal,
-			Frota frota, ClientePJ cliente) {
-		super(id, dataInicio, dataFim, seguradora, valorMensal);
+	public SeguroPJ(LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora, Frota frota, ClientePJ cliente) {
+		super(dataInicio, dataFim, seguradora);
 		this.frota = frota;
 		this.cliente = cliente;
 	}
@@ -42,11 +42,18 @@ public class SeguroPJ extends Seguro {
 	public double calcularValor() {
 		int qtdFuncionarios = this.cliente.getQtdFuncionarios();
 		int qtdVeiculos = this.frota.getListaVeiculos().size();
-		int anoFundacao = this.cliente.getDataFundacao()
+		int anosPosFundacao = Period.between(LocalDate.now(), this.cliente.getDataFundacao()).getYears();
+		int quantidadeSinistrosCliente = this.getListaSinistros().size();
+		int quantidadeSinistrosCondutores = 0;
+		for (Condutor condutor: this.getListaCondutores()) {
+			quantidadeSinistrosCondutores += condutor.getListaSinistros().size();
+		}
 		
 		return (VALOR_BASE * (10 + (qtdFuncionarios/10)) * 
 							 (1 + 1/(qtdVeiculos+2)) *
-							 (1 + 1/()));
+							 (1 + 1/(anosPosFundacao+2)) *
+							 (2 + (quantidadeSinistrosCliente/10)) * 
+							 (5 + (quantidadeSinistrosCondutores/10)));
 	}
 	
 	public String toString() {

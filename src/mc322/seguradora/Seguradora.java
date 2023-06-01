@@ -74,6 +74,18 @@ public class Seguradora {
 		this.listaClientes = listaClientes;
 	}
 	
+	public boolean gerarSeguro(String keyCliente, LocalDate dataFim) {
+		Cliente cliente = acharCliente(keyCliente);
+		if (cliente == null) return false;
+		Seguro novo;
+		if (cliente instanceof ClientePF) {
+			novo = new SeguroPF(LocalDate.now(), dataFim, this, null, cliente);
+		}
+
+		
+		return true;
+	}
+	
 	// Metodo para cadastrar um novo cliente
 	public boolean cadastrarCliente(Cliente novo) {
 		// percorremos o array de clientes para verificar se o CPF/CNPJ nao eh repetido

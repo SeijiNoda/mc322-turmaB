@@ -3,6 +3,7 @@ package mc322.seguro;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import mc322.condutor.Condutor;
 import mc322.seguradora.Seguradora;
@@ -17,15 +18,12 @@ public abstract class Seguro {
 	private List<Condutor> listaCondutores;
 	private double valorMensal;
 	
-	
-	
-	public Seguro(int id, LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora, double valorMensal) {
-		super();
-		this.id = id;
+	public Seguro(LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora) {
+		this.id = gerarIdAleatorio();
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
 		this.seguradora = seguradora;
-		this.valorMensal = valorMensal;
+		this.valorMensal = calcularValor();
 		this.listaSinistros = new ArrayList<Sinistro>();
 		this.listaCondutores = new ArrayList<Condutor>();
 	}
@@ -107,6 +105,20 @@ public abstract class Seguro {
 	public abstract void gerarSinistro();
 	
 	public abstract double calcularValor();
+	
+	private int gerarIdAleatorio() {
+		// utilizando da classe Random do Java para gerar um ID aleatorio para a instancia de Sinistro
+		Random gerador = new Random();
+		
+		// settar limite maximo do numero a ser gerado
+		int maximo = 100000;
+		
+		// gerar o numero aleatorio
+		int nmrAleatorio = gerador.nextInt(maximo);
+		
+		// pegar hashcode do nosso numero aleatorio atraves de String.hashCode()	
+		return (nmrAleatorio + "").hashCode();
+	}
 	
 	public abstract String toString();
 }
