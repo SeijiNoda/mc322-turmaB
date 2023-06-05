@@ -120,26 +120,17 @@ public class ClientePJ extends Cliente{
 		return true;
 	}
 	
-	public boolean atualizarFrota(String key) {
-		for (Frota frota: this.listaFrotas) {
-			if (frota.getId().equals(key)) {
-				this.listaFrotas.remove(frota);
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	public boolean atualizarFrota(String key, Veiculo v) {
 		for (Frota frota: this.listaFrotas) {
 			if (frota.getId().equals(key)) {
 				for (Veiculo vAtual: frota.getListaVeiculos()) {
 					if (vAtual.getPlaca().equals(v.getPlaca())) {
 						frota.removerVeiculo(v.getPlaca());
+						if (frota.getListaVeiculos().size() <= 0) this.listaFrotas.remove(frota);
 						return true;
 					}
 				}
-				frota.adicionarVeiculos(v);
+				frota.adicionarVeiculo(v);
 				return true;
 			}
 		}

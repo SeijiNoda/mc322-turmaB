@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import mc322.cliente.*;
+import mc322.frota.Frota;
 import mc322.seguro.*;
 import mc322.sinistro.Sinistro;
 import mc322.veiculo.Veiculo;
@@ -74,16 +75,55 @@ public class Seguradora {
 		this.listaClientes = listaClientes;
 	}
 	
+	
+	// ============================
+	// Metodos especificos
+	// ============================
+	
+	// Funcao que retorna uma lista de clientes com o tipo especificado no parametro, se este nao for
+	// nem "PF" nem "PJ", retorna todos os clientes
+	public List<Cliente> listarClientes(String tipoCliente) {
+		tipoCliente = tipoCliente.toUpperCase();
+		List<Cliente> ret = new ArrayList<Cliente>();
+		if (tipoCliente.equals("PF")) {
+			for (Cliente cliente: this.listaClientes) {
+				if (cliente instanceof ClientePF) ret.add(cliente);
+			}
+		}
+		else if (tipoCliente.equals("PJ")) {
+			for (Cliente cliente: this.listaClientes) {
+				if (cliente instanceof ClientePJ) ret.add(cliente);
+			}
+		} else {
+			ret = this.getListaClientes();
+		}
+		
+		return ret;
+	}
+	
 	public boolean gerarSeguro(String keyCliente, LocalDate dataFim) {
 		Cliente cliente = acharCliente(keyCliente);
 		if (cliente == null) return false;
 		Seguro novo;
 		if (cliente instanceof ClientePF) {
-			novo = new SeguroPF(LocalDate.now(), dataFim, this, null, cliente);
+			novo = new SeguroPF(LocalDate.now(), dataFim, this, null, (ClientePF) cliente);
+		} else {
+			novo = new SeguroPJ(LocalDate.now(), dataFim, this, null, (ClientePJ) cliente);
 		}
 
-		
+		this.listaSeguros.add(novo);
 		return true;
+	}
+	
+	public boolean cancelarSeguro(int idSeguro) {
+		for (Seguro seguro: this.listaSeguros) {
+			if (seguro.getId() == idSeguro) {
+				this.listaSeguros.remove(seguro);
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	// Metodo para cadastrar um novo cliente
@@ -149,26 +189,45 @@ public class Seguradora {
 		// Senao encontramos nenhum cliente apos percorrer toda a lista, retornamos false
 		return false;
 	}
-	
-	// Funcao que retorna uma lista de clientes com o tipo especificado no parametro, se este nao for
-	// nem "PF" nem "PJ", retorna todos os clientes
-	public List<Cliente> listarClientes(String tipoCliente) {
-		tipoCliente = tipoCliente.toUpperCase();
-		List<Cliente> ret = new ArrayList<Cliente>();
-		if (tipoCliente.equals("PF")) {
-			for (Cliente cliente: this.listaClientes) {
-				if (cliente instanceof ClientePF) ret.add(cliente);
+
+	public List<Seguro> getSegurosPorCliente(String key) {
+		boolean ehPF = getTipoCliente(key).equals("PF");
+		Cliente cliente = acharCliente(key);
+		if (cliente == null) return null;
+		
+		List<Seguro> lista = new ArrayList<Seguro>();
+		for (Seguro seguro: this.listaSeguros) {
+			if (ehPF) {
+				ClientePF atual = ((SeguroPF) seguro).getCliente();
+				if (atual.getCpf().equals(key)) lista.add(seguro);
+			} else {
+				ClientePJ atual = ((SeguroPJ) seguro).getCliente();
+				if (atual.getCnpj().equals(key)) lista.add(seguro);
 			}
-		}
-		else if (tipoCliente.equals("PJ")) {
-			for (Cliente cliente: this.listaClientes) {
-				if (cliente instanceof ClientePJ) ret.add(cliente);
-			}
-		} else {
-			ret = this.getListaClientes();
 		}
 		
-		return ret;
+		return lista;
+	}
+	
+	public List<Sinistro> getSinistrosPorCliente(String key) {
+		if (acharCliente(key) == null) return null;
+		
+		List<Sinistro> lista = new ArrayList<Sinistro>();
+		List<Seguro> seguros = this.getSegurosPorCliente(key);
+		for (Seguro seguro: seguros) {
+			lista.addAll(seguro.getListaSinistros());
+		}
+		
+		return lista;
+	}
+	
+	public double calcularReceita() {
+		double receita = 0.0;
+		for (Seguro seguro: this.listaSeguros) {
+			receita += seguro.calcularValor();
+		}
+		
+		return receita;
 	}
 	
 	// Metodo auxiliar para achar um cliente dado seu CPF/CNPJ
@@ -187,14 +246,38 @@ public class Seguradora {
 		return null;
 	}
 	
+	private Seguro acharSeguro(String key) {
+		for (Seguro seguro: this.listaSeguros) {
+			if (seguro instanceof SeguroPF) {
+				if (((SeguroPF) seguro).getCliente().getCpf().equals(key)) {
+					return seguro;
+				}
+			} else {
+				if (((SeguroPJ) seguro).getCliente().getCnpj().equals(key)) {
+					return seguro;
+				}
+			}
+		}
+		
+		return null;
+	}
+		
 	// Metodo auxiliar para achar um veiculo dado sua placa e o cliente de onde procurar
-//	private Veiculo acharVeiculo(Cliente cliente, String placa) {
-//		for (Veiculo veiculo: cliente.getListaVeiculos()) {
-//			if (veiculo.getPlaca().equals(placa)) return veiculo;
-//		}
-//		
-//		return null;
-//	}
+	private Veiculo acharVeiculo(Cliente cliente, String placa) {
+		if (cliente instanceof ClientePF) {
+			for (Veiculo veiculo: ((ClientePF) cliente).getListaVeiculos()) {
+				if (veiculo.getPlaca().equals(placa)) return veiculo;
+			}
+		} else {
+			for (Frota frota: ((ClientePJ) cliente).getListaFrotas()) {
+				for (Veiculo veiculo: frota.getListaVeiculos()) {
+					if (veiculo.getPlaca().equals(placa)) return veiculo;
+				}
+			}
+		}
+		
+		return null;
+	}
 	
 	// Metodo auxiliar que retorna uma String "PF" caso key tenha o tamanho de um CPF, "PJ"
 	// se tiver tamanho de CNPJ, e null caso nao seja nenhum ou outro 
@@ -209,28 +292,62 @@ public class Seguradora {
 		else return "PJ";
 	}
 	
-//	// Metodo que tenta adicionar um veiculo a um cliente, se conseguir retorna o true, senao false
-//	public boolean adicionarVeiculo(Veiculo novo, String key) {
-//		// Buscamos o cliente com a chave key do parametro
-//		Cliente cliente = acharCliente(key);
-//		if (cliente == null) return false;
-//		
-//		// Usamos o metodo booleano da classe Cliente para adicionar o novo veiculo ao cliente encontrado
-//		boolean res = cliente.adicionarVeiculo(novo);
-//		this.calcularPrecoSeguroCliente(key);
-//		return res;
-//	}
+	// Metodo que tenta adicionar um veiculo a um cliente, se conseguir retorna o true, senao false
+	public boolean adicionarVeiculo(Veiculo novo, String key) {
+		// Buscamos o cliente com a chave key do parametro
+		boolean ehPF = getTipoCliente(key).equals("PF");
+		Cliente cliente = acharCliente(key);
+		if (cliente == null || !ehPF) return false;
+		
+		Seguro seguro = acharSeguro(key);
+		if (seguro == null) return false;
+		
+		boolean res = ((ClientePF) cliente).cadastrarVeiculo(novo); 
+		seguro.calcularValor();
+		return res;
+	}
 	
+	public boolean adicionarVeiculo(Veiculo novo, String keyPJ, String keyFrota) {
+		boolean ehPJ = getTipoCliente(keyPJ).equals("PJ");
+		Cliente cliente = acharCliente(keyPJ);
+		if (cliente == null || !ehPJ) return false;
+		
+		Seguro seguro = acharSeguro(keyPJ);
+		if (seguro == null) return false;
+		
+		boolean ret = ((ClientePJ) cliente).atualizarFrota(keyFrota, novo);
+		seguro.calcularValor();
+		return ret;
+	}
+ 	
 	// Metodo que tenta remover um veiculo dado sua placa de um cliente dado sua chave, retorna true em sucesso
 	// e false caso nao consiga (similar ao metodo acima)
-//	public boolean removerVeiculo(String placa, String key) {
-//		Cliente cliente = acharCliente(key);
-//		if (cliente == null) return false;
-//		
-//		boolean res = cliente.removerVeiculo(placa);
-//		this.calcularPrecoSeguroCliente(key);
-//		return res;
-//	}
+	public boolean removerVeiculo(String placa, String key) {
+		Cliente cliente = acharCliente(key);
+		if (cliente == null || !(cliente instanceof ClientePF)) return false;
+		
+		Seguro seguro = acharSeguro(key);
+		if (seguro == null) return false;
+		
+		boolean res = ((ClientePF) cliente).removerVeiculo(placa);
+		seguro.calcularValor();	
+		return res;
+	}
+	
+	public boolean removerVeiculo(String placa, String keyFrota, String keyPJ) {
+		Cliente cliente = acharCliente(keyPJ);
+		if (cliente == null || !(cliente instanceof ClientePJ)) return false;
+		
+		Seguro seguro = acharSeguro(keyPJ);
+		if (seguro == null) return false;
+		
+		Veiculo veiculo = acharVeiculo(cliente, placa);
+		if (veiculo == null) return false;
+		
+		boolean res = ((ClientePJ) cliente).atualizarFrota(keyFrota, veiculo);
+		seguro.calcularValor();
+		return res;
+	}
 	
 	// Metodo para gerar um novo Sinistro dado suas informacoes nescessarias
 //	public boolean gerarSinsitro(LocalDate data, String placa, String endereco, String key) {
@@ -314,15 +431,6 @@ public class Seguradora {
 //		cliente.setValorSeguro(valorSeguro);
 //		return valorSeguro;
 //	}
-	
-	public double calcularReceita() {
-		double receita = 0.0;
-		for (Seguro seguro: this.listaSeguros) {
-			receita += seguro.calcularValor();
-		}
-		
-		return receita;
-	}
 	
 //	public boolean transferirSeguro(String keyOriginal, String keyNovo) {
 //		Cliente original = acharCliente(keyOriginal);

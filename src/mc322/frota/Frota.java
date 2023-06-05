@@ -37,7 +37,7 @@ public class Frota {
 		return null;
 	}
 	
-	public boolean adicionarVeiculos(Veiculo novo) { 
+	public boolean adicionarVeiculo(Veiculo novo) { 
 		if (acharVeiculo(novo.getPlaca()) == null) return false;
 		
 		this.listaVeiculos.add(novo);

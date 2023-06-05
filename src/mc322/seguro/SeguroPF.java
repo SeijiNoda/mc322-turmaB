@@ -58,9 +58,13 @@ public class SeguroPF extends Seguro {
 		
 		int qtdSinistrosCliente = this.getListaSinistros().size();
  		
-		return (VALOR_BASE * fatorIdade * (1 + 1/(qtdVeiculos + 2)) * 
+		
+		double novoValor = (VALOR_BASE * fatorIdade * (1 + 1/(qtdVeiculos + 2)) * 
 						  				  (2 + (qtdSinistrosCliente/10)) * 
 								  		  (5 + (qtdSinistrosCondutor/10)));
+		
+		this.setValorMensal(novoValor);
+		return novoValor;
 	}
 	
 	public String toString() {
