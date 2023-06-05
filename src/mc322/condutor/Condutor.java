@@ -70,6 +70,7 @@ public class Condutor {
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
 	}
+	
 	public String getEmail() {
 		return email;
 	}

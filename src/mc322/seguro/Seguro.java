@@ -23,7 +23,7 @@ public abstract class Seguro {
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
 		this.seguradora = seguradora;
-		this.valorMensal = calcularValor();
+		this.valorMensal = 0;
 		this.listaSinistros = new ArrayList<Sinistro>();
 		this.listaCondutores = new ArrayList<Condutor>();
 	}
@@ -102,7 +102,13 @@ public abstract class Seguro {
 		return true;
 	}
 	
-	public abstract void gerarSinistro();
+	public boolean gerarSinistro(String endereco, String cpfCondutor) {
+		Condutor condutor = acharCondutor(cpfCondutor);
+		if (condutor == null) return false;
+		
+		this.getListaSinistros().add(new Sinistro(LocalDate.now(), endereco, condutor, this));		
+		return true;
+	}
 	
 	public abstract double calcularValor();
 	
@@ -118,6 +124,14 @@ public abstract class Seguro {
 		
 		// pegar hashcode do nosso numero aleatorio atraves de String.hashCode()	
 		return (nmrAleatorio + "").hashCode();
+	}
+	
+	protected Condutor acharCondutor(String cpf) {
+		for (Condutor condutor: this.listaCondutores) {
+			if (condutor.getCpf().equals(cpf)) return condutor;
+		}
+			
+		return null;
 	}
 	
 	public abstract String toString();

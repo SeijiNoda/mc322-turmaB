@@ -20,12 +20,12 @@ public class SeguroPJ extends Seguro {
 		this.cliente = cliente;
 	}
 
-	public Frota getVeiculo() {
+	public Frota getFrota() {
 		return frota;
 	}
 	
-	public void setVeiculo(Frota veiculo) {
-		this.frota = veiculo;
+	public void setFrota(Frota frota) {
+		this.frota = frota;
 	}
 	
 	public ClientePJ getCliente() {
@@ -36,11 +36,8 @@ public class SeguroPJ extends Seguro {
 		this.cliente = cliente;
 	}
 	
-	public void gerarSinistro() {
-	}
-	
 	public double calcularValor() {
-		int qtdFuncionarios = this.cliente.getQtdFuncionarios();
+		int qtdFuncionarios = this.getListaCondutores().size();
 		int qtdVeiculos = this.frota.getListaVeiculos().size();
 		int anosPosFundacao = Period.between(LocalDate.now(), this.cliente.getDataFundacao()).getYears();
 		int quantidadeSinistrosCliente = this.getListaSinistros().size();
@@ -49,14 +46,17 @@ public class SeguroPJ extends Seguro {
 			quantidadeSinistrosCondutores += condutor.getListaSinistros().size();
 		}
 		
-		return (VALOR_BASE * (10 + (qtdFuncionarios/10)) * 
+		double novoValor = (VALOR_BASE * (10 + (qtdFuncionarios/10)) * 
 							 (1 + 1/(qtdVeiculos+2)) *
 							 (1 + 1/(anosPosFundacao+2)) *
 							 (2 + (quantidadeSinistrosCliente/10)) * 
 							 (5 + (quantidadeSinistrosCondutores/10)));
+		
+		this.setValorMensal(novoValor);
+		return novoValor;
 	}
 	
 	public String toString() {
-		return String.format("Seguro PJ");
+		return String.format("\nSeguro %d:\n%s - %s\nR$ %f/mes\n", this.getId(), this.cliente.getNome(), this.cliente.getCnpj(), this.getValorMensal());
 	}
 }

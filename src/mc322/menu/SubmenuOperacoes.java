@@ -4,6 +4,7 @@ public enum SubmenuOperacoes {
 	CADASTRAR_CLIENTE("Cadastrar cliente"),
 	CADASTRAR_VEICULO("Cadastrar veiculo"),
 	CADASTRAR_SEGURADORA("Cadastrar seguradora"),
+	CADASTRAR_SEGURO("Cadastrar seguro"),
 	
 	LISTAR_CLIENTES("Listar clientes"),
 	LISTAR_SINISTROS_SEGURADORA("Listar sinistros por seguradora"),
@@ -14,6 +15,7 @@ public enum SubmenuOperacoes {
 	EXCLUIR_CLIENTE("Excluir cliente"),
 	EXCLUIR_VEICULO("Excluir veiculo"),
 	EXCLUIR_SINISTRO("Excluir sininstro"),
+	EXCLUIR_SEGURO("Excluir seguro"),
 	VOLTAR("Voltar");
 	
 	private final String descricao;

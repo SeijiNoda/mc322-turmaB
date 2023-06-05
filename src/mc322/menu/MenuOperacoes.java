@@ -5,6 +5,7 @@ public enum MenuOperacoes {
 			SubmenuOperacoes.CADASTRAR_CLIENTE,
 			SubmenuOperacoes.CADASTRAR_VEICULO,
 			SubmenuOperacoes.CADASTRAR_SEGURADORA,
+			SubmenuOperacoes.CADASTRAR_SEGURO,
 			SubmenuOperacoes.VOLTAR
 	}),
 	LISTAR(2, "Listar", new SubmenuOperacoes[] {
@@ -18,7 +19,9 @@ public enum MenuOperacoes {
 	EXCLUIR(3, "Excluir", new SubmenuOperacoes[] {
 			SubmenuOperacoes.EXCLUIR_CLIENTE,
 			SubmenuOperacoes.EXCLUIR_VEICULO,
-			SubmenuOperacoes.EXCLUIR_SINISTRO
+			SubmenuOperacoes.EXCLUIR_SINISTRO,
+			SubmenuOperacoes.EXCLUIR_SEGURO,
+			SubmenuOperacoes.VOLTAR
 	}),
 	GERAR_SINISTRO(4, "Gerar Sinistro", new SubmenuOperacoes[] { SubmenuOperacoes.VOLTAR }),
 	TRANSFERIR_SEGURO(5, "Transferir Seguro",  new SubmenuOperacoes[] { SubmenuOperacoes.VOLTAR }),

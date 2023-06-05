@@ -7,7 +7,6 @@ import mc322.condutor.Condutor;
 import mc322.seguro.Seguro;
 
 public class Sinistro {
-	private static int cont = 0;
 	private final int id;
 	private LocalDate data;
 	private String endereco;
@@ -15,7 +14,7 @@ public class Sinistro {
 	private Seguro seguro;
 	
 	public Sinistro(LocalDate data, String endereco, Condutor condutor, Seguro seguro) {
-		this.id = ++cont;
+		this.id = gerarIdAleatorio();
 		this.data = data;
 		this.endereco = endereco;
 		this.condutor = condutor;

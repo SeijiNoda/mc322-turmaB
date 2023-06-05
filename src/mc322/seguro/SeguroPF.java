@@ -20,6 +20,7 @@ public class SeguroPF extends Seguro {
 		super(dataInicio, dataFim, seguradora);
 		this.veiculo = veiculo;
 		this.cliente = cliente;
+		calcularValor();
 	}
 
 	public Veiculo getVeiculo() {
@@ -36,9 +37,6 @@ public class SeguroPF extends Seguro {
 	
 	public void setCliente(ClientePF cliente) {
 		this.cliente = cliente;
-	}
-	
-	public void gerarSinistro() {
 	}
 	
 	public double calcularValor() {
@@ -68,6 +66,6 @@ public class SeguroPF extends Seguro {
 	}
 	
 	public String toString() {
-		return String.format("Seguro PF");
+		return String.format("\nSeguro %d:\n%s - %s\n%s\nR$ %f/mes\n", this.getId(), this.cliente.getNome(), this.cliente.getCpf(), this.veiculo.toString(), this.getValorMensal());
 	}
 }

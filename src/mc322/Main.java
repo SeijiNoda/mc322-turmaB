@@ -3,15 +3,16 @@ package mc322;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import mc322.cliente.Cliente;
 import mc322.cliente.ClientePF;
 import mc322.cliente.ClientePJ;
+import mc322.condutor.Condutor;
 import mc322.leitor.InputReader;
 import mc322.menu.MenuOperacoes;
 import mc322.menu.SubmenuOperacoes;
 import mc322.seguradora.Seguradora;
+import mc322.seguro.SeguroPF;
 import mc322.sinistro.Sinistro;
 import mc322.veiculo.Veiculo;
 
@@ -82,7 +83,7 @@ public class Main {
 				cadastrarSinistro();
 				break;
 			case TRANSFERIR_SEGURO:
-				transferirSeguro();
+				//transferirSeguro();
 				break;
 			case CALCULAR_RECEITA:
 				calcularReceita();
@@ -102,6 +103,9 @@ public class Main {
 			break;
 		case CADASTRAR_SEGURADORA:
 			cadastrarSeguradora();
+			break;
+		case CADASTRAR_SEGURO:
+			cadastrarSeguro();
 			break;
 		case LISTAR_CLIENTES:
 			listarClientes();
@@ -141,6 +145,9 @@ public class Main {
 		case EXCLUIR_SINISTRO:
 			excluirSinistro();
 			break;
+		case EXCLUIR_SEGURO:
+			excluirSeguro();
+			break;
 		}
 	}
 	
@@ -171,7 +178,6 @@ public class Main {
 		int segId = -1;
 		while (segId < 0) {
 			seguradoraStr = InputReader.lerString("Nome da seguradora: ");
-			//System.out.printf("ola mundo" + seguradoraStr + "hello world");
 			segId = existeSeguradora(seguradoraStr);
 		}
 		Seguradora seguradora = seguradoras.get(segId);
@@ -180,22 +186,22 @@ public class Main {
 		
 		String endereco = InputReader.lerString("Endereco: ");
 		
-		LocalDate dataLicensa = LocalDate.now();
-	
+		String telefone = InputReader.lerString("Telefone: ");
+		
+		String email = InputReader.lerEmail();
+		
 		String tipo = InputReader.lerTipoCliente();
 		
 		if (tipo.equals("PF")) {
 			String educacao = InputReader.lerString("Educacao: ");
 			
 			String genero = InputReader.lerString("Genero: ");
-			
-			String classeEconomica = InputReader.lerString("Classe Economica: ");
-			
+
 			String cpf = InputReader.lerCPF();
 ;									
 			LocalDate dataNascimento = InputReader.lerData("Aniversario: [dd/mm/yyyy] ");
 		
-			ClientePF novoCliente = new ClientePF(nome, endereco, dataLicensa, educacao, genero, classeEconomica, cpf, dataNascimento);
+			ClientePF novoCliente = new ClientePF(nome, telefone, endereco, email, cpf, dataNascimento, educacao, genero);
 			if (seguradora.cadastrarCliente(novoCliente)) {
 				System.out.println("\nMENSAGEM: " + nome + " cadastrado com sucesso!\n");
 				return true;
@@ -208,7 +214,7 @@ public class Main {
 			
 			LocalDate dataFundacao = InputReader.lerData("Data de fundacao: [dd/mm/yyyy]");
 			
-			ClientePJ novoCliente = new ClientePJ(nome, endereco, dataLicensa, cnpj, dataFundacao);
+			ClientePJ novoCliente = new ClientePJ(nome, telefone, endereco, email, cnpj, dataFundacao);
 			if (seguradora.cadastrarCliente(novoCliente)) {
 				System.out.println("\nMENSAGEM: " + nome + " cadastrado com sucesso!\n");
 				return true;
@@ -262,7 +268,7 @@ public class Main {
 	
 	private static void cadastrarSeguradora() {
 		String nome = "";
-		int segId = -1;
+		int segId = 1;
 		while (segId >= 0) {
 			nome = InputReader.lerString("Nome da seguradora: ");
 			segId = existeSeguradora(nome);
@@ -285,9 +291,9 @@ public class Main {
 		
 		if (tipo.equals("PF")) 
 			key = InputReader.lerCPF();
-		else 
+		else
 			key = InputReader.lerCNPJ();
-										
+			
 		String placa = InputReader.lerPlaca("Placa do veiculo do acidente: ");
 		
 		LocalDate data = InputReader.lerData("Data do acidente: [dd/mm/yyyy] ");
@@ -302,8 +308,10 @@ public class Main {
 		}
 		Seguradora seguradora = seguradoras.get(segId);
 		
+		String keyCondutor = InputReader.lerCPF("CPF do condutor: ");
+		
 		// Verificamos o resultado de nossa tentativa de cadastro e informamos o usuario de acordo com tal resutlado
-		if (seguradora.gerarSinsitro(data, placa, endereco, key)) {
+		if (seguradora.gerarSinistro(data, placa, endereco, key, keyCondutor)) {
 			System.out.println("\nMENSAGEM: Sinistro registrado com sucesso!\n");
 			return true;
 		}
@@ -311,11 +319,56 @@ public class Main {
 		return false;
 	}
 	
+	private static boolean cadastrarSeguro() {
+		if (seguradoras.get(0) == null) {
+			System.out.println("Nenhuma seguradora no sistema! Cadastre alguma para continuar.");
+			return false;
+		}
+		
+		String seguradoraStr = "";
+		int segId = -1;
+		while (segId < 0) {
+			seguradoraStr = InputReader.lerString("Nome da seguradora: ");
+			segId = existeSeguradora(seguradoraStr);
+		}
+		Seguradora seguradora = seguradoras.get(segId);
+		
+		String tipo = InputReader.lerTipoCliente();
+		
+		if (tipo.equals("PF")) {
+			String cpf = InputReader.lerCPF();
+
+			String placa = InputReader.lerPlaca("Placa do veiculo a ser segurado: ");
+			
+			if (seguradora.gerarSeguro(cpf, placa, LocalDate.now().plusYears(1))) {
+				System.out.println("\nMENSAGEM: Seguro de " + cpf + " para o veiculo de placa " + placa + " criado com sucesso!\n");
+				return true;
+			} else {
+				printError("\nMENSAGEM: Erro ao criar seguro, verifique os dados e tente novamente.\n");
+				return false;
+			}
+		} else {
+			String cnpj = InputReader.lerCNPJ();
+			
+			String codeFrota = InputReader.lerString("Codigo da frota a ser segurada: ");
+			
+			if (seguradora.gerarSeguro(cnpj, codeFrota, LocalDate.now().plusYears(1))) {
+				System.out.println("\nMENSAGEM: Seguro de " + cnpj  + " para a frota " + codeFrota + "criado com sucesso!\n");
+				return true;
+			} else {
+				printError("\nMENSAGEM: Erro ao criar seguro, verifique os dados e tente novamente.\n");
+				return false;
+			}
+		}
+	}
+	
 	private static void listarClientes() {
 		if (seguradoras.get(0) == null) System.out.println("Nenhuma seguradora no sistema! Cadastre alguma para continuar.");
+		
+		String tipo = InputReader.lerTipoCliente();
+				
 		for (Seguradora seguradora: seguradoras) {
 			System.out.println("\n" + seguradora.getNome().toUpperCase() + ":");
-			String tipo = InputReader.lerTipoCliente();
 			
 			List<Cliente> lista = seguradora.listarClientes(tipo);
 			if (lista.size() == 0) {
@@ -350,7 +403,7 @@ public class Main {
 		for (Seguradora seguradora: seguradoras) {
 			System.out.println("\n" + seguradora.getNome().toUpperCase() + ":");
 
-			List<Sinistro> lista = seguradora.listarSinistros(key);
+			List<Sinistro> lista = seguradora.getSinistrosPorCliente(key);
 			if (lista == null) continue;
 			if (lista.size() == 0) {
 				System.out.println("\nMENSAGEM: Lista de sinistros vazia!\n");
@@ -386,7 +439,9 @@ public class Main {
 			System.out.println("\n" + seguradora.getNome().toUpperCase() + ":");
 
 			List<Veiculo> lista = seguradora.listarVeiculos(key);
-			if (lista.size() == 0) {
+			if (lista == null) {
+				printError("\nMENSAGEM: Cliente " + key + " nao encontrado.\n");
+			} else if (lista.size() == 0) {
 				System.out.println("\nMENSAGEM: Lista de veiculos vazia!\n");
 			} else {
 				for (Veiculo veiculo: lista) {
@@ -457,43 +512,45 @@ public class Main {
 		
 		int idSinistro = InputReader.lerInteiro("ID do sinistro a remover: ");
 		
+		
+		
 		// Verificamos o resultado da tentativa de remocao e informamos o usuario de acordo
 		if (seguradora.removerSinistro(idSinistro)) {
 			System.out.println("\nMENSAGEM: Sinistro de ID" + idSinistro + " removido com sucesso!\n");
 			return true;
 		}
-		System.out.println("\nMENSAGEM: Nao encontramos sinistro com ID: " + idSinistro + " na seguradora " + seguradora.getNome() + ".\n");
+		System.out.println("\nMENSAGEM: Nao encontramos sinistro com ID: " + idSinistro + " na seguradora " + nome + ".\n");
 		return false;
 	}
 	
-	private static boolean transferirSeguro() {
-		String keyOriginal = "";
-		String tipo = InputReader.lerTipoCliente();
-		
-		if (tipo.equals("PF")) keyOriginal = InputReader.lerCPF();
-		else keyOriginal = InputReader.lerCNPJ();
-		
-		String keyNovo = "";
-		tipo = InputReader.lerTipoCliente();
-		
-		if (tipo.equals("PF")) keyNovo = InputReader.lerCPF();
-		else keyNovo = InputReader.lerCNPJ();
-		
-		String nome = "";
-		int segId = -1;
-		while (segId < 0) {
-			nome = InputReader.lerString("Nome da seguradora: ");
-			segId = existeSeguradora(nome);
-		}
-		Seguradora seguradora = seguradoras.get(segId);
-		
-		if (seguradora.transferirSeguro(keyOriginal, keyNovo)) {
-			System.out.println("\nMENSAGE: Seguro transferido com sucesso!\n");
-			return true;
-		}
-		System.out.println("\nMENSAGEM: Falhar ao transferir o seguro. Verifique os dados e tente novamente.\n");
-		return false;
-	}
+//	private static boolean transferirSeguro() {
+//		String keyOriginal = "";
+//		String tipo = InputReader.lerTipoCliente();
+//		
+//		if (tipo.equals("PF")) keyOriginal = InputReader.lerCPF();
+//		else keyOriginal = InputReader.lerCNPJ();
+//		
+//		String keyNovo = "";
+//		tipo = InputReader.lerTipoCliente();
+//		
+//		if (tipo.equals("PF")) keyNovo = InputReader.lerCPF();
+//		else keyNovo = InputReader.lerCNPJ();
+//		
+//		String nome = "";
+//		int segId = -1;
+//		while (segId < 0) {
+//			nome = InputReader.lerString("Nome da seguradora: ");
+//			segId = existeSeguradora(nome);
+//		}
+//		Seguradora seguradora = seguradoras.get(segId);
+//		
+//		if (seguradora.transferirSeguro(keyOriginal, keyNovo)) {
+//			System.out.println("\nMENSAGE: Seguro transferido com sucesso!\n");
+//			return true;
+//		}
+//		System.out.println("\nMENSAGEM: Falhar ao transferir o seguro. Verifique os dados e tente novamente.\n");
+//		return false;
+//	}
 	
 	private static void calcularReceita() {
 		String nome = "";
@@ -516,16 +573,16 @@ public class Main {
 		
 		// Cadastrar e remover pelo menos um Cliente (ClientePF ou ClientePJ)
 		//   System.out.println(seguradora.toString());
-		ClientePF cliente1 = new ClientePF("Joao", "Rua dos Joaos - 111", LocalDate.now(), "EM", "M", "Media", "603.106.490-13", LocalDate.now());
+		ClientePF cliente1 = new ClientePF("Joao", "(19) 982231314", "Rua dos Joaos - 111", "joao@gmail.com", "60310649013", LocalDate.now(), "Ensino Medio", "Masculino");
 		seguradora.cadastrarCliente(cliente1);
 		//   System.out.println(seguradora.toString());
 		seguradora.removerCliente(cliente1.getCpf());
 		//   System.out.println(seguradora.toString());
 		
 		// Cadastrar pelo menos 2 clientes em Seguradora (sem remover), sendo 1 do tipo ClientePF e 1 do tipo ClientePJ;
-		ClientePF cliente2 = new ClientePF("Joao", "Rua dos Joaos - 111", LocalDate.now(), "EM", "M", "Media", "97657383070", LocalDate.now());
+		ClientePF cliente2 = new ClientePF("Joao", "(19) 982231314", "Rua dos Joaos - 111", "joao@gmail.com", "60310649013", LocalDate.now(), "Ensino Medio", "Masculino");
 		seguradora.cadastrarCliente(cliente2);
-		ClientePJ cliente3 = new ClientePJ("Venda do Joao", "Rua dos Joaos - 111", LocalDate.now(), "86.658.785/0001-00", LocalDate.now());
+		ClientePJ cliente3 = new ClientePJ("Venda do Joao", "(19) 359439485", "Rua dos Joaos - 111", "joao.venda@gmail.com", "86658785000100", LocalDate.now());
 		seguradora.cadastrarCliente(cliente3);
 		//   System.out.println(seguradora.toString());
 		
@@ -536,6 +593,14 @@ public class Main {
 		Veiculo veiculo2 = new Veiculo("ABC1D23", "Calloi", "Bicicleta do grau", 2000);
 		seguradora.adicionarVeiculo(veiculo2, cliente3.getCnpj());
 		//   System.out.println(cliente3.toString());
+		
+		SeguroPF seguro = new SeguroPF(LocalDate.now(), LocalDate.now().plusDays(365), seguradora, veiculo2, cliente2);
+		seguradora.getListaSeguros().add(seguro);
+		
+		seguro.getListaCondutores().add(new Condutor(cliente2.getCpf(), cliente2.getNome(), cliente2.getTelefone(), cliente2.getEndereco(), cliente2.getEmail(), cliente2.getDataNascimento()));
+		
+		Sinistro sinistro = new Sinistro(LocalDate.now(), "Rua pitagoras, 345", seguro.getListaCondutores().get(0), seguro);
+		seguro.getListaSinistros().add(sinistro);
 		
 		seguradoras.add(seguradora);
 		

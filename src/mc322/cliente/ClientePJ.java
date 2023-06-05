@@ -11,14 +11,12 @@ public class ClientePJ extends Cliente{
 	private final String cnpj;
 	private LocalDate dataFundacao;
 	private List<Frota> listaFrotas;
-	private int qtdFuncionarios;
 	
-	public ClientePJ(String nome, String telefone, String endereco, String email, String cnpj, LocalDate dataFundacao, int qtdFuncionarios) {
+	public ClientePJ(String nome, String telefone, String endereco, String email, String cnpj, LocalDate dataFundacao) {
 		super(nome, telefone, endereco, email);
 		this.cnpj = cnpj;
 		this.dataFundacao = dataFundacao;
 		this.listaFrotas = new ArrayList<Frota>();
-		this.qtdFuncionarios = qtdFuncionarios;
 	}
 
 	public LocalDate getDataFundacao() {
@@ -39,14 +37,6 @@ public class ClientePJ extends Cliente{
 
 	public void setListaFrotas(List<Frota> listaFrotas) {
 		this.listaFrotas = listaFrotas;
-	}
-	
-	public int getQtdFuncionarios() {
-		return qtdFuncionarios;
-	}
-
-	public void setQtdFuncionarios(int qtdFuncionarios) {
-		this.qtdFuncionarios = qtdFuncionarios;
 	}
 
 	public static boolean validarCNPJ(String cnpj) {

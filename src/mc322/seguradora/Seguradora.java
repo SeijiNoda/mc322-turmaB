@@ -59,11 +59,11 @@ public class Seguradora {
 		this.endereco = endereco;
 	}
 
-	public List<Seguro> getListaSinistros() {
+	public List<Seguro> getListaSeguros() {
 		return listaSeguros;
 	}
 
-	public void setListaSinistros(List<Seguro> listaSeguros) {
+	public void setListaSeguros(List<Seguro> listaSeguros) {
 		this.listaSeguros = listaSeguros;
 	}
 
@@ -101,15 +101,21 @@ public class Seguradora {
 		return ret;
 	}
 	
-	public boolean gerarSeguro(String keyCliente, LocalDate dataFim) {
+	public boolean gerarSeguro(String keyCliente, String key, LocalDate dataFim) {
 		Cliente cliente = acharCliente(keyCliente);
 		if (cliente == null) return false;
 		Seguro novo;
 		if (cliente instanceof ClientePF) {
-			novo = new SeguroPF(LocalDate.now(), dataFim, this, null, (ClientePF) cliente);
+			Veiculo veiculo = acharVeiculo((ClientePF) cliente, key);
+			if (veiculo == null) return false;
+			
+			novo = new SeguroPF(LocalDate.now(), dataFim, this, veiculo, (ClientePF) cliente);
 		} else {
-			novo = new SeguroPJ(LocalDate.now(), dataFim, this, null, (ClientePJ) cliente);
-		}
+			Frota frota = acharFrota((ClientePJ) cliente, key);
+			if (frota == null) return false;
+			
+			novo = new SeguroPJ(LocalDate.now(), dataFim, this, frota, (ClientePJ) cliente);
+		}	
 
 		this.listaSeguros.add(novo);
 		return true;
@@ -150,46 +156,77 @@ public class Seguradora {
 	}
 	
 	// Metodo para remover um cliente com um ID CPF/CNPJ key, retorna true se removeu, false senao
+//	public boolean removerCliente(String key) {
+//		// Pegamos uma String com o tipo do cliente da key (PF ou PJ)
+//		String tipo = getTipoCliente(key);
+//		if (tipo == null) return false;
+//		boolean isCpf = tipo.equals("PF");
+//		boolean isCnpj = tipo.equals("PJ");
+//		
+//		// Caso nao seja nenhum dos dois, retorna falso (pela verificacao da Main nunca acontece,
+//		// mas preventivo caso seja chamado de outro lugar)
+//		if (!isCpf && !isCnpj) return false;
+//		
+//		// Percorremos a lista de clientes da seguradora buscando o cliente com o CPF/CNPJ passado por key
+//		for (Cliente cliente: this.listaClientes) {
+//			if ((isCpf && ((ClientePF) cliente).getCpf().equals(key)) || (isCnpj && ((ClientePJ) cliente).getCnpj().equals(key))) {
+//				
+//				// Quando encontramos, removemos o cliente da lista da seguradora
+//				this.listaClientes.remove(cliente);
+//				
+//				// Caso a lista de seguros da seguradora nao esteja vazia, temos que avaliar se 
+//				// existe seguro com tal CPF/CNPJ, e se sim, remove-lo(s)
+//				if (this.listaSeguros.size() > 0) {
+//					
+//					// Percorre a lista de seguros da seguradora
+//					for (Seguro seguro: this.listaSeguros) {
+//						Cliente atual = isCpf ? ((SeguroPF) seguro).getCliente() : ((SeguroPJ) seguro).getCliente();
+//						if ( (isCpf && atual instanceof ClientePF && ((ClientePF) atual).getCpf().equals(key)) || ( isCnpj && atual instanceof ClientePJ && ((ClientePJ) atual).getCnpj().equals(key)) ) {
+//								// Se o CPF/CNPJ do sinsitro atual da lista bater com o de key, removemos tal seguro
+//								this.listaSeguros.remove(seguro);
+//						} 
+//					}
+//				}
+//				
+//				return true;
+//			}
+//		}
+//		
+//		// Senao encontramos nenhum cliente apos percorrer toda a lista, retornamos false
+//		return false;
+//	}
+//	
 	public boolean removerCliente(String key) {
-		// Pegamos uma String com o tipo do cliente da key (PF ou PJ)
-		String tipo = getTipoCliente(key);
-		if (tipo == null) return false;
-		boolean isCpf = tipo.equals("PF");
-		boolean isCnpj = tipo.equals("PJ");
+		Cliente cliente = acharCliente(key);
+		if (cliente == null) return false;
 		
-		// Caso nao seja nenhum dos dois, retorna falso (pela verificacao da Main nunca acontece,
-		// mas preventivo caso seja chamado de outro lugar)
-		if (!isCpf && !isCnpj) return false;
-		
-		// Percorremos a lista de clientes da seguradora buscando o cliente com o CPF/CNPJ passado por key
-		for (Cliente cliente: this.listaClientes) {
-			if ((isCpf && ((ClientePF) cliente).getCpf().equals(key)) || (isCnpj && ((ClientePJ) cliente).getCnpj().equals(key))) {
-				
-				// Quando encontramos, removemos o cliente da lista da seguradora
-				this.listaClientes.remove(cliente);
-				
-				// Caso a lista de seguros da seguradora nao esteja vazia, temos que avaliar se 
-				// existe seguro com tal CPF/CNPJ, e se sim, remove-lo(s)
-				if (this.listaSeguros.size() > 0) {
-					
-					// Percorre a lista de seguros da seguradora
-					for (Seguro seguro: this.listaSeguros) {
-						Cliente atual = isCpf ? ((SeguroPF) seguro).getCliente() : ((SeguroPJ) seguro).getCliente();
-						if ( (isCpf && atual instanceof ClientePF && ((ClientePF) atual).getCpf().equals(key)) || ( isCnpj && atual instanceof ClientePJ && ((ClientePJ) atual).getCnpj().equals(key)) ) {
-								// Se o CPF/CNPJ do sinsitro atual da lista bater com o de key, removemos tal seguro
-								this.listaSeguros.remove(seguro);
-						} 
-					}
-				}
-				
-				return true;
+		List<Seguro> remover = new ArrayList<Seguro>();
+		for (Seguro seguro: this.listaSeguros) {
+			if (seguro instanceof SeguroPF && cliente instanceof ClientePF) {
+				if (((SeguroPF) seguro).getCliente() == cliente) remover.add(seguro);
+			} else if (seguro instanceof SeguroPJ && cliente instanceof ClientePJ) {
+				if (((SeguroPJ) seguro).getCliente() == cliente) remover.remove(seguro);
 			}
 		}
+		this.listaSeguros.removeAll(remover);
 		
-		// Senao encontramos nenhum cliente apos percorrer toda a lista, retornamos false
-		return false;
+		this.listaClientes.remove(cliente);		
+		return true;
 	}
-
+	
+	public boolean gerarSinistro(LocalDate data, String placa, String endereco, String keyCliente, String keyCondutor) {
+		Cliente cliente = acharCliente(keyCliente);
+		if (cliente == null) return false;
+		
+		Veiculo veiculo = acharVeiculo(cliente, placa);
+		if (veiculo == null) return false;
+		
+		Seguro seguro = acharSeguro(keyCliente, placa);
+		if (seguro == null) return false;
+		
+		return seguro.gerarSinistro(endereco, keyCondutor);
+	}
+	
 	public List<Seguro> getSegurosPorCliente(String key) {
 		boolean ehPF = getTipoCliente(key).equals("PF");
 		Cliente cliente = acharCliente(key);
@@ -246,15 +283,18 @@ public class Seguradora {
 		return null;
 	}
 	
-	private Seguro acharSeguro(String key) {
+	private Seguro acharSeguro(String keyCliente, String placa) {
 		for (Seguro seguro: this.listaSeguros) {
 			if (seguro instanceof SeguroPF) {
-				if (((SeguroPF) seguro).getCliente().getCpf().equals(key)) {
-					return seguro;
+				if (((SeguroPF) seguro).getCliente().getCpf().equals(keyCliente)) {
+					if (((SeguroPF) seguro).getVeiculo().getPlaca().equals(placa))
+						return seguro;
 				}
 			} else {
-				if (((SeguroPJ) seguro).getCliente().getCnpj().equals(key)) {
-					return seguro;
+				if (((SeguroPJ) seguro).getCliente().getCnpj().equals(keyCliente)) {
+					for (Veiculo v: ((SeguroPJ) seguro).getFrota().getListaVeiculos()) {
+						if (v.getPlaca().equals(placa)) return seguro;
+					}
 				}
 			}
 		}
@@ -262,6 +302,16 @@ public class Seguradora {
 		return null;
 	}
 		
+	private Seguro acharSeguro(String keyFrota) {
+		for (Seguro seguro: this.listaSeguros) {
+			if (seguro instanceof SeguroPJ) {
+				if (((SeguroPJ) seguro).getFrota().getId().equals(keyFrota)) return (SeguroPJ) seguro;
+			}
+		}
+		
+		return null;
+	}
+	
 	// Metodo auxiliar para achar um veiculo dado sua placa e o cliente de onde procurar
 	private Veiculo acharVeiculo(Cliente cliente, String placa) {
 		if (cliente instanceof ClientePF) {
@@ -274,6 +324,14 @@ public class Seguradora {
 					if (veiculo.getPlaca().equals(placa)) return veiculo;
 				}
 			}
+		}
+		
+		return null;
+	}
+	
+	private Frota acharFrota(ClientePJ cliente, String code) {
+		for (Frota frota: cliente.getListaFrotas()) {
+			if (frota.getId().equals(code)) return frota;
 		}
 		
 		return null;
@@ -292,19 +350,21 @@ public class Seguradora {
 		else return "PJ";
 	}
 	
-	// Metodo que tenta adicionar um veiculo a um cliente, se conseguir retorna o true, senao false
+	// Metodo que tenta adicionar um veiculo a um cliente PF, se conseguir retorna o true, senao false
 	public boolean adicionarVeiculo(Veiculo novo, String key) {
 		// Buscamos o cliente com a chave key do parametro
 		boolean ehPF = getTipoCliente(key).equals("PF");
 		Cliente cliente = acharCliente(key);
 		if (cliente == null || !ehPF) return false;
 		
-		Seguro seguro = acharSeguro(key);
-		if (seguro == null) return false;
 		
-		boolean res = ((ClientePF) cliente).cadastrarVeiculo(novo); 
+		boolean ret = ((ClientePF) cliente).cadastrarVeiculo(novo); 
+		
+		Seguro seguro = acharSeguro(key, novo.getPlaca());
+		if (seguro == null) return false;
 		seguro.calcularValor();
-		return res;
+		
+		return ret;
 	}
 	
 	public boolean adicionarVeiculo(Veiculo novo, String keyPJ, String keyFrota) {
@@ -312,11 +372,15 @@ public class Seguradora {
 		Cliente cliente = acharCliente(keyPJ);
 		if (cliente == null || !ehPJ) return false;
 		
-		Seguro seguro = acharSeguro(keyPJ);
-		if (seguro == null) return false;
+		// veiculo soh pode estar em uma frota
+		Veiculo veiculo = acharVeiculo((ClientePJ) cliente, novo.getPlaca());
+		if (veiculo != null) return false;
 		
-		boolean ret = ((ClientePJ) cliente).atualizarFrota(keyFrota, novo);
-		seguro.calcularValor();
+		boolean ret = ((ClientePJ) cliente).atualizarFrota(keyFrota, novo);	
+
+		Seguro seguro = acharSeguro(keyFrota);
+		if (seguro != null) seguro.calcularValor();
+		
 		return ret;
 	}
  	
@@ -326,27 +390,23 @@ public class Seguradora {
 		Cliente cliente = acharCliente(key);
 		if (cliente == null || !(cliente instanceof ClientePF)) return false;
 		
-		Seguro seguro = acharSeguro(key);
-		if (seguro == null) return false;
-		
-		boolean res = ((ClientePF) cliente).removerVeiculo(placa);
-		seguro.calcularValor();	
-		return res;
+		boolean ret = ((ClientePF) cliente).removerVeiculo(placa);
+		Seguro seguro = acharSeguro(key, placa);
+		if (seguro != null) seguro.calcularValor();	
+		return ret;
 	}
 	
 	public boolean removerVeiculo(String placa, String keyFrota, String keyPJ) {
 		Cliente cliente = acharCliente(keyPJ);
 		if (cliente == null || !(cliente instanceof ClientePJ)) return false;
-		
-		Seguro seguro = acharSeguro(keyPJ);
-		if (seguro == null) return false;
-		
+
 		Veiculo veiculo = acharVeiculo(cliente, placa);
 		if (veiculo == null) return false;
 		
-		boolean res = ((ClientePJ) cliente).atualizarFrota(keyFrota, veiculo);
-		seguro.calcularValor();
-		return res;
+		boolean ret = ((ClientePJ) cliente).atualizarFrota(keyFrota, veiculo);
+		Seguro seguro = acharSeguro(keyPJ, placa);
+		if (seguro != null) seguro.calcularValor();
+		return ret;
 	}
 	
 	// Metodo para gerar um novo Sinistro dado suas informacoes nescessarias
@@ -366,15 +426,17 @@ public class Seguradora {
 //		return true;
 //	}
 //	
-//	public boolean removerSinistro(int id) {
-//		for (Sinistro sinistro: this.listaSinistros) {
-//			if (sinistro.getId() == id) {
-//				this.listaSinistros.remove(sinistro);
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
+	public boolean removerSinistro(int id) {
+		for (Seguro seguro: this.listaSeguros) {
+			for (Sinistro sinistro: seguro.getListaSinistros()) {
+				if (sinistro.getId() == id) {
+					seguro.getListaSinistros().remove(sinistro);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 	// Metodo que avalia se existe um sinistro para o cliente com CPF/CNPJ de key
 //	public boolean vizualizarSinistro(String key) {
@@ -388,34 +450,63 @@ public class Seguradora {
 //	}
 	
 	// Retorna a lista de sinistros da seguradora
-//	public List<Sinistro> listarSinistros() {
-//		return this.getListaSinistros();
-//	}
-//	
-//	public List<Sinistro> listarSinistros(String key) {
-//		Cliente cliente = acharCliente(key);
-//		if (cliente == null) return null;
-//		
-//		List<Sinistro> ret = new ArrayList<Sinistro>();
-//		
-//		for (Sinistro sinistro: this.listaSinistros) {
-//			if (sinistro.getCliente() != cliente) ret.add(sinistro);
-//		}
-//		
-//		return ret;
-//	}
+	public List<Sinistro> listarSinistros() {
+		List<Sinistro> lista = new ArrayList<Sinistro>();
+		for (Seguro seguro: this.listaSeguros) {
+			lista.addAll(seguro.getListaSinistros());
+		}
+		
+		return lista;
+	}
 	
-//	public List<Veiculo> listarVeiculos() {
-//		List<Veiculo> lista = new ArrayList<Veiculo>();
-//		for (Cliente cliente: this.listaClientes) {
-//			lista.addAll(cliente.getListaVeiculos());
-//		}
-//		return lista;
-//	}
-//	
-//	public List<Veiculo> listarVeiculos(String key) {
-//		return acharCliente(key).getListaVeiculos();
-//	}
+	public List<Sinistro> listarSinistros(String key) {
+		Cliente cliente = acharCliente(key);
+		if (cliente == null) return null;
+		
+		for (Seguro seguro: this.listaSeguros) {
+			if (cliente instanceof ClientePF) {
+				if (((SeguroPF) seguro).getCliente() == cliente) {
+					return seguro.getListaSinistros();
+				}
+			} else {
+				if (((SeguroPJ) seguro).getCliente() == cliente) {
+					return seguro.getListaSinistros();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public List<Veiculo> listarVeiculos() {
+		List<Veiculo> lista = new ArrayList<Veiculo>();
+		
+		for (Cliente cliente: this.listaClientes) {
+			if (cliente instanceof ClientePF) {
+				lista.addAll(((ClientePF) cliente).getListaVeiculos());
+			} else {
+				for (Frota frota: ((ClientePJ) cliente).getListaFrotas()) {
+					lista.addAll(frota.getListaVeiculos());
+				}
+			}
+		}
+		
+		return lista;
+	}
+	
+	public List<Veiculo> listarVeiculos(String key) {
+		Cliente cliente = acharCliente(key);
+		if (cliente == null) return null;
+		
+		if (cliente instanceof ClientePF) return ((ClientePF) acharCliente(key)).getListaVeiculos();
+		else {
+			List<Veiculo> lista = new ArrayList<Veiculo>();
+			for (Frota frota: ((ClientePJ) cliente).getListaFrotas()) {
+				lista.addAll(frota.getListaVeiculos());
+			}
+			return lista;
+		}
+	}
 	
 //	public double calcularPrecoSeguroCliente(String key) {
 //		Cliente cliente = acharCliente(key);
