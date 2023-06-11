@@ -14,6 +14,7 @@ public enum MenuOperacoes {
 			SubmenuOperacoes.LISTAR_SINISTROS_CLIENTE,
 			SubmenuOperacoes.LISTAR_VEICULOS_CLIENTE,
 			SubmenuOperacoes.LISTAR_VEICULOS_SEGURADORA,
+			SubmenuOperacoes.LISTAR_SEGURADORAS,
 			SubmenuOperacoes.VOLTAR
 	}),
 	EXCLUIR(3, "Excluir", new SubmenuOperacoes[] {
@@ -24,8 +25,7 @@ public enum MenuOperacoes {
 			SubmenuOperacoes.VOLTAR
 	}),
 	GERAR_SINISTRO(4, "Gerar Sinistro", new SubmenuOperacoes[] { SubmenuOperacoes.VOLTAR }),
-	TRANSFERIR_SEGURO(5, "Transferir Seguro",  new SubmenuOperacoes[] { SubmenuOperacoes.VOLTAR }),
-	CALCULAR_RECEITA(6, "Calcular Receita",  new SubmenuOperacoes[] { SubmenuOperacoes.VOLTAR }),
+	CALCULAR_RECEITA(5, "Calcular Receita",  new SubmenuOperacoes[] { SubmenuOperacoes.VOLTAR }),
 	SAIR(0, "Sair", new SubmenuOperacoes[] {});
 	
 	private final int id;

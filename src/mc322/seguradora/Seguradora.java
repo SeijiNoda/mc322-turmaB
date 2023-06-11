@@ -146,56 +146,10 @@ public class Seguradora {
 			}
 		}
 		
-		// Se o CPF/CNPJ do novo cliente nao for repetido, adicionamos ele na lista de clientes da seguradora
 		this.listaClientes.add(novo);
-		
-//		if (novo instanceof ClientePF) this.calcularPrecoSeguroCliente(((ClientePF) novo).getCpf());
-//		else if (novo instanceof ClientePJ) this.calcularPrecoSeguroCliente(((ClientePJ) novo).getCnpj());
-		
 		return true;
 	}
 	
-	// Metodo para remover um cliente com um ID CPF/CNPJ key, retorna true se removeu, false senao
-//	public boolean removerCliente(String key) {
-//		// Pegamos uma String com o tipo do cliente da key (PF ou PJ)
-//		String tipo = getTipoCliente(key);
-//		if (tipo == null) return false;
-//		boolean isCpf = tipo.equals("PF");
-//		boolean isCnpj = tipo.equals("PJ");
-//		
-//		// Caso nao seja nenhum dos dois, retorna falso (pela verificacao da Main nunca acontece,
-//		// mas preventivo caso seja chamado de outro lugar)
-//		if (!isCpf && !isCnpj) return false;
-//		
-//		// Percorremos a lista de clientes da seguradora buscando o cliente com o CPF/CNPJ passado por key
-//		for (Cliente cliente: this.listaClientes) {
-//			if ((isCpf && ((ClientePF) cliente).getCpf().equals(key)) || (isCnpj && ((ClientePJ) cliente).getCnpj().equals(key))) {
-//				
-//				// Quando encontramos, removemos o cliente da lista da seguradora
-//				this.listaClientes.remove(cliente);
-//				
-//				// Caso a lista de seguros da seguradora nao esteja vazia, temos que avaliar se 
-//				// existe seguro com tal CPF/CNPJ, e se sim, remove-lo(s)
-//				if (this.listaSeguros.size() > 0) {
-//					
-//					// Percorre a lista de seguros da seguradora
-//					for (Seguro seguro: this.listaSeguros) {
-//						Cliente atual = isCpf ? ((SeguroPF) seguro).getCliente() : ((SeguroPJ) seguro).getCliente();
-//						if ( (isCpf && atual instanceof ClientePF && ((ClientePF) atual).getCpf().equals(key)) || ( isCnpj && atual instanceof ClientePJ && ((ClientePJ) atual).getCnpj().equals(key)) ) {
-//								// Se o CPF/CNPJ do sinsitro atual da lista bater com o de key, removemos tal seguro
-//								this.listaSeguros.remove(seguro);
-//						} 
-//					}
-//				}
-//				
-//				return true;
-//			}
-//		}
-//		
-//		// Senao encontramos nenhum cliente apos percorrer toda a lista, retornamos false
-//		return false;
-//	}
-//	
 	public boolean removerCliente(String key) {
 		Cliente cliente = acharCliente(key);
 		if (cliente == null) return false;

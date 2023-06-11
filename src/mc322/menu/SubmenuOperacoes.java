@@ -11,6 +11,7 @@ public enum SubmenuOperacoes {
 	LISTAR_SINISTROS_CLIENTE("Listar sinistros por cliente"),
 	LISTAR_VEICULOS_SEGURADORA("Listar veiculos por seguradora"),
 	LISTAR_VEICULOS_CLIENTE("Listar veiculos por cliente"),
+	LISTAR_SEGURADORAS("Listar seguradoras"),
 	
 	EXCLUIR_CLIENTE("Excluir cliente"),
 	EXCLUIR_VEICULO("Excluir veiculo"),

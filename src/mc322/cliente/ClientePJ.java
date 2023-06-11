@@ -124,7 +124,9 @@ public class ClientePJ extends Cliente{
 				return true;
 			}
 		}
-		return false;
+		
+		cadastrarFrota(key);
+		return this.listaFrotas.get(this.listaFrotas.size() - 1).adicionarVeiculo(v);
 	}
 	
 	public List<Veiculo> getVeiculosPorFrota(String key) {

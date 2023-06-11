@@ -82,9 +82,6 @@ public class Main {
 			case GERAR_SINISTRO:
 				cadastrarSinistro();
 				break;
-			case TRANSFERIR_SEGURO:
-				//transferirSeguro();
-				break;
 			case CALCULAR_RECEITA:
 				calcularReceita();
 				break;
@@ -136,6 +133,9 @@ public class Main {
 			listarVeiculos(key);
 			break;
 		}
+		case LISTAR_SEGURADORAS:
+			listarSeguradoras();
+			break;
 		case EXCLUIR_CLIENTE:
 			excluirCliente();
 			break;
@@ -240,12 +240,6 @@ public class Main {
 		
 		String tipo = InputReader.lerTipoCliente();
 		
-		String key = "";
-		if (tipo.equals("PF")) 
-			key = InputReader.lerCPF("CPF do cliente ao qual adicionar: ");
-		 else 
-			key = InputReader.lerCNPJ("CNPJ do cliente ao qual adicionar: ");
-		
 		String placa = InputReader.lerPlaca();
 		
 		String marca = InputReader.lerString("Marca: ");
@@ -256,14 +250,24 @@ public class Main {
 		
 		Veiculo novo = new Veiculo(placa, marca, modelo, anoFabricacao);
 		
-		// Verificamos o resultado do metodo de adicionar e informamos o usuario de acordo
-		if (seguradora.adicionarVeiculo(novo, key)) {
-			System.out.println("\nMENSAGEM: Veiculo novo adicionado com sucesso!\n");
-			return true;
-		} else {
-			System.out.println("\nMENSAGEM: Cliente jah possue veiculo com placa: " + placa +".\n");
-			return false;
+		String key = "";
+		String frota = "";
+		boolean ret = false;
+		if (tipo.equals("PF")) {
+			key = InputReader.lerCPF("CPF do cliente ao qual adicionar: ");
+			ret = seguradora.adicionarVeiculo(novo, key);
 		}
+		else {
+			key = InputReader.lerCNPJ("CNPJ do cliente ao qual adicionar: ");
+			frota = InputReader.lerString("ID da frota ao qual adicionar: ");
+			ret = seguradora.adicionarVeiculo(novo, key, frota);
+		}
+		
+		// Verificamos o resultado do metodo de adicionar e informamos o usuario de acordo
+		if (ret) System.out.println("\nMENSAGEM: Veiculo novo adicionado com sucesso!\n");
+		else System.out.println("\nMENSAGEM: Cliente jah possue veiculo com placa: " + placa +".\n");
+		
+		return ret;
 	}
 	
 	private static void cadastrarSeguradora() {
@@ -353,7 +357,7 @@ public class Main {
 			String codeFrota = InputReader.lerString("Codigo da frota a ser segurada: ");
 			
 			if (seguradora.gerarSeguro(cnpj, codeFrota, LocalDate.now().plusYears(1))) {
-				System.out.println("\nMENSAGEM: Seguro de " + cnpj  + " para a frota " + codeFrota + "criado com sucesso!\n");
+				System.out.println("\nMENSAGEM: Seguro de " + cnpj  + " para a frota " + codeFrota + " criado com sucesso!\n");
 				return true;
 			} else {
 				printError("\nMENSAGEM: Erro ao criar seguro, verifique os dados e tente novamente.\n");
@@ -451,6 +455,14 @@ public class Main {
 		}
 	}
 	
+	private static void listarSeguradoras() {
+		if (seguradoras.get(0) == null) System.out.println("Nenhuma seguradora no sistema! Cadastre alguma para continuar.");
+		for (Seguradora seguradora: seguradoras) {
+			System.out.println("SEGURADORAS:\n");
+			System.out.println(seguradora.toString() + "\n");
+		}
+	}
+	
 	private static boolean excluirCliente() {	
 		String key = "";
 		String tipo = InputReader.lerTipoCliente();
@@ -492,8 +504,16 @@ public class Main {
 		
 		String placa = InputReader.lerPlaca("Placa do veiculo a remover: ");
 		
+		String frota;
+		boolean ret = false;
+		if (!tipo.equals("PF")) {
+			frota = InputReader.lerString("ID da frota de onde remover: ");
+			ret = seguradora.removerVeiculo(placa, frota, key);
+		} else ret = seguradora.removerVeiculo(placa, key);
+		
+		
 		// Verificamos o resultado da tentativa de remocao e informamos o usuario de acordo
-		if (seguradora.removerVeiculo(placa, key)) {
+		if (ret) {
 			System.out.println("\nMENSAGEM: Veiculo de placa " + placa + " removido com sucesso!\n");
 			return true;
 		}
@@ -523,34 +543,25 @@ public class Main {
 		return false;
 	}
 	
-//	private static boolean transferirSeguro() {
-//		String keyOriginal = "";
-//		String tipo = InputReader.lerTipoCliente();
-//		
-//		if (tipo.equals("PF")) keyOriginal = InputReader.lerCPF();
-//		else keyOriginal = InputReader.lerCNPJ();
-//		
-//		String keyNovo = "";
-//		tipo = InputReader.lerTipoCliente();
-//		
-//		if (tipo.equals("PF")) keyNovo = InputReader.lerCPF();
-//		else keyNovo = InputReader.lerCNPJ();
-//		
-//		String nome = "";
-//		int segId = -1;
-//		while (segId < 0) {
-//			nome = InputReader.lerString("Nome da seguradora: ");
-//			segId = existeSeguradora(nome);
-//		}
-//		Seguradora seguradora = seguradoras.get(segId);
-//		
-//		if (seguradora.transferirSeguro(keyOriginal, keyNovo)) {
-//			System.out.println("\nMENSAGE: Seguro transferido com sucesso!\n");
-//			return true;
-//		}
-//		System.out.println("\nMENSAGEM: Falhar ao transferir o seguro. Verifique os dados e tente novamente.\n");
-//		return false;
-//	}
+	private static boolean excluirSeguro() {
+		String nome = "";
+		int segId = -1;
+		while (segId < 0) {
+			nome = InputReader.lerString("Nome da seguradora: ");
+			segId = existeSeguradora(nome);
+		}
+		Seguradora seguradora = seguradoras.get(segId);
+		
+		int idSeguro = InputReader.lerInteiro("ID do seguro a excluir: ");
+		
+		if (seguradora.cancelarSeguro(idSeguro)) {
+			System.out.println("\nMENSAGEM: Seguro de ID " + idSeguro + " removido com sucesso!\n");
+			return true;
+		}
+		
+		System.out.println("\nMENSAGEM: Nao encontramos seguro com ID " + idSeguro + ".\n");
+		return true;
+	}
 	
 	private static void calcularReceita() {
 		String nome = "";
